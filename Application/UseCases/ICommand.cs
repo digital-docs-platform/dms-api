@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    internal interface ICommand
+    public interface ICommand<TRequest>
     {
+        void Execute(TRequest request); 
     }
 }
