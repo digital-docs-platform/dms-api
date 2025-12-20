@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    internal interface IQuery
+    public interface IQuery<TSearch, TResult> : IUseCase
     {
+        TResult Execute(TSearch search);
     }
 }

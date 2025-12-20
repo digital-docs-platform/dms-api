@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    internal interface IProtectedUseCase
+    public interface IProtectedUseCase
     {
+        string RequiredPermission { get; } //document.create
     }
 }

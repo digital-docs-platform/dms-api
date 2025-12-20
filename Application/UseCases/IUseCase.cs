@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    internal interface IUseCase
+    public interface IUseCase : IProtectedUseCase
     {
+        public int Id { get; }
+        public string Name { get; }
+        public string Description { get; }
     }
 }
