@@ -8,6 +8,6 @@ namespace API.jwt
 
         public string Email => "";
 
-        public IReadOnlyCollection<string> ActorPermissions => new List<string> { ""};
+        public IReadOnlyCollection<string> ActorPermissions => new List<string> {};
     }
 }
