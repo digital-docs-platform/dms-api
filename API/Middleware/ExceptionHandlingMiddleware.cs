@@ -1,4 +1,6 @@
-﻿using Application.Logging;
+﻿using API.DTO.Response;
+using Application.Exceptions;
+using Application.Logging;
 using System.ComponentModel.DataAnnotations;
 
 namespace API.Middleware
@@ -48,6 +50,16 @@ namespace API.Middleware
             //        message = ex.Message
             //    });
             //}
+            catch(UnauthorizedException ex)
+            {
+                context.Response.StatusCode = 401;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
             catch (System.Exception ex)
             {
                 Guid errorId = Guid.NewGuid();
@@ -61,12 +73,12 @@ namespace API.Middleware
 
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
-                var responseBody = new
-                {
-                    message = $"There was an error, please contact support with this error code: {errorId}."
-                };
 
-                await context.Response.WriteAsJsonAsync(responseBody);
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = $"There was an error, please contact support with this error code: {errorId}.",
+                    Data = new { errorId, traceId = context.TraceIdentifier, message = ex.Message }
+                });
             }
         }
     }

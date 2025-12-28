@@ -8,6 +8,6 @@ namespace Application.UseCases
 {
     public interface ICommand<TRequest> : IUseCase
     {
-        void Execute(TRequest request); 
+        public Task ExecuteAsync(TRequest request, CancellationToken ct);
     }
 }

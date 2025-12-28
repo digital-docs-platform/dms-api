@@ -9,7 +9,7 @@ namespace Application.UseCaseHandling
 {
     public interface IQueryHandler
     {
-        public TResult Handle<TSearch, TResult>(IQuery<TSearch, TResult> query, TSearch search)
-            where TResult : class;
+        public Task<TResponse> HandleAsync<TSearch, TResponse>(IQuery<TSearch, TResponse> query, TSearch search, CancellationToken ct)
+            where TResponse : class;
     }
 }

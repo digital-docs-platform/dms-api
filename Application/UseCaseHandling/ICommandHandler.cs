@@ -9,6 +9,6 @@ namespace Application.UseCaseHandling
 {
     public interface ICommandHandler
     {
-        public void Handle<TRequest>(ICommand<TRequest> command, TRequest request);
+        public Task HandleAsync<TRequest>(ICommand<TRequest> command, TRequest request, CancellationToken ct);
     }
 }

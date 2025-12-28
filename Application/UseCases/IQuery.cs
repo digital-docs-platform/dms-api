@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Azure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    public interface IQuery<TSearch, TResult> : IUseCase
+    public interface IQuery<TSearch, TResponse> : IUseCase
     {
-        TResult Execute(TSearch search);
+        public Task<TResponse> ExecuteAsync(TSearch search, CancellationToken ct);
     }
 }

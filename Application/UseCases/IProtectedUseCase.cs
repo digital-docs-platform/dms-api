@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
-    public interface IProtectedUseCase
+    public interface IProtectedUseCase : IUseCase
     {
-        string RequiredPermission { get; } //document.create
+        IEnumerable<string> RequiredPermissions { get; } // Documents.Create
     }
 }

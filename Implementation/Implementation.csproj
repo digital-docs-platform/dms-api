@@ -9,15 +9,18 @@
   <ItemGroup>
     <Folder Include="UseCases\Dapper\Commands\" />
     <Folder Include="UseCases\Dapper\Queries\" />
-    <Folder Include="UseCases\EntityFramework\" />
+    <Folder Include="UseCases\EntityFramework\Queries\User\" />
     <Folder Include="Validators\" />
-    <Folder Include="UseCases\EntityFramework\Commands\" />
-    <Folder Include="UseCases\EntityFramework\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

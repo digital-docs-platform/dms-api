@@ -9,9 +9,11 @@ namespace Application.UseCaseHandling
 {
     public class CommandHandler : ICommandHandler
     {
-        public void Handle<TRequest>(ICommand<TRequest> command, TRequest request)
+        public async Task HandleAsync<TRequest>(ICommand<TRequest> command, TRequest request, CancellationToken ct)
         {
-            throw new NotImplementedException();
+
+
+            await command.ExecuteAsync(request, ct);
         }
     }
 }

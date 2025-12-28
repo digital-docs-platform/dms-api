@@ -9,9 +9,10 @@ namespace Application.UseCaseHandling
 {
     public class QueryHandler : IQueryHandler
     {
-        public TResult Handle<TSearch, TResult>(IQuery<TSearch, TResult> query, TSearch search) where TResult : class
+        public async Task<TResponse> HandleAsync<TSearch, TResponse>(IQuery<TSearch, TResponse> query, TSearch search, CancellationToken ct) where TResponse : class
         {
-            throw new NotImplementedException();
+
+            return await query.ExecuteAsync(search, ct);
         }
     }
 }
