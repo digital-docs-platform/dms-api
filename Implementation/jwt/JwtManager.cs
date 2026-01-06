@@ -26,30 +26,24 @@ namespace Implementation.jwt
 
         public async Task<string> MakeToken(string email, string password, CancellationToken ct = default)
         {
-            // 1) Nadji user-a
+        
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email, ct);
-                
+
 
             if (user is null)
                 throw new UnauthorizedException("Invalid credentials. (email)");
 
-            // 2) Proveri password
-            //if (!_hasher.Verify(password, user.Password))
-            //    throw new UnauthorizedException("Invalid credentials. (password)");
-
-            if(password != user.Password)
-            {
+            if (!_hasher.Verify(password, user.PasswordHash))
                 throw new UnauthorizedException("Invalid credentials. (password)");
-            }
 
-            // 3) Napravi claimove (minimalno!)
+          
             var now = DateTime.UtcNow;
             var expires = now.AddMinutes(_jwt.AccessTokenMinutes);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, "1"),
+                new Claim(JwtRegisteredClaimNames.Email, email),
             };
 
             // 4) Potpis + token

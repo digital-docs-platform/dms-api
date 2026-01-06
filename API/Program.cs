@@ -1,7 +1,9 @@
-using API.jwt;
+﻿using API.Auth.Cookies;
+using API.Auth.jwt;
 using API.Middleware;
 using Application;
 using Application.jwt;
+using Application.PermissionHandling;
 using Application.Security.Cryptography;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
@@ -30,6 +32,15 @@ builder.Services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(b
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("client", p =>
+        p.WithOrigins("http://localhost:5173")
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials());
+});
+
 
 
 // My services
@@ -45,26 +56,36 @@ var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>()
 if (string.IsNullOrWhiteSpace(jwt.Key))
     throw new InvalidOperationException("Jwt:Key is missing.");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidIssuer = jwt.Issuer,
+var cookieName = builder.Configuration["AuthCookie:Name"] ?? "dms_at";
 
-            ValidateAudience = true,
-            ValidAudience = jwt.Audience,
+builder.Services
+  .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(options =>
+  {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+          ValidateIssuer = true,
+          ValidIssuer = jwt.Issuer,
+          ValidateAudience = true,
+          ValidAudience = jwt.Audience,
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.FromSeconds(30)
+      };
 
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+      // ključni deo: uzmi token iz HttpOnly cookie-ja
+      options.Events = new JwtBearerEvents
+      {
+          OnMessageReceived = context =>
+          {
+              if (context.Request.Cookies.TryGetValue(cookieName, out var token))
+                  context.Token = token;
 
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(30)
-        };
-    });
-
-
+              return Task.CompletedTask;
+          }
+      };
+  });
 
 
 
@@ -89,15 +110,25 @@ builder.Services.AddScoped<IApplicationActor>(sp =>
 //END OF JWT CONFIG SECTION
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+builder.Services.AddScoped<IAuthCookieService, AuthCookieService>();
+builder.Services.AddScoped<IPermissionHandler, PermissionHandler>();
 
 
-// Command services
+// COMMAND SERVICES
 
 builder.Services.AddScoped<ICommandHandler, CommandHandler>();
 
 builder.Services.AddTransient<ICreateUserCommand, CreateUserCommand>();
 
-//End ov command services
+//End of command services
+
+
+
+// QUERY SERVICES
+
+builder.Services.AddScoped<IQueryHandler, QueryHandler>();
+
+//END OF QUERY SERVICES
 
 //-------------------
 
@@ -119,6 +150,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
+app.UseCors("client");
 app.UseAuthentication();
 app.UseAuthorization();
 

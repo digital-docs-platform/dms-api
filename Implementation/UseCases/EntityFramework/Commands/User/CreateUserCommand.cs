@@ -57,7 +57,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,
-                Password = _hasher.Hash(password),
+                PasswordHash = _hasher.Hash(password),
             };
 
             await _context.Users.AddAsync(user, ct);

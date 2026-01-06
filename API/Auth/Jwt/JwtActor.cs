@@ -1,6 +1,6 @@
 ﻿using Application;
 
-namespace API.jwt
+namespace API.Auth.jwt
 {
     public class JwtActor : IApplicationActor
     {
@@ -8,6 +8,6 @@ namespace API.jwt
 
         public string Email { get; set; }
 
-        public IReadOnlyCollection<string> ActorPermissions { get; set; }
+        public IReadOnlySet<string> ActorPermissions { get; set; }
     }
 }

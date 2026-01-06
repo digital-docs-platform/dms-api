@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20251229223408_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,9 +198,14 @@ namespace DataAccess.Migrations
                     b.Property<int?>("AddedByUserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "GroupId");
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("UserGroups", (string)null);
                 });
@@ -218,9 +226,14 @@ namespace DataAccess.Migrations
                     b.Property<int?>("AddedByUserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "PermissionId");
 
                     b.HasIndex("PermissionId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("UserPermission");
                 });
@@ -253,6 +266,10 @@ namespace DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany("UserGroups")
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserPermission", b =>
@@ -268,6 +285,17 @@ namespace DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("UserId1");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User", b =>
+                {
+                    b.Navigation("UserGroups");
+
+                    b.Navigation("UserPermissions");
                 });
 #pragma warning restore 612, 618
         }

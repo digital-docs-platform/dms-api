@@ -10,10 +10,14 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class UserConfiguration : EntityConfiguration<User>
+    public class UserConfiguration : SoftDeletableActivatableConfiguration<User>
     {
         public override void Configure(EntityTypeBuilder<User> builder)
         {
+
+            builder.ToTable("Users");
+
+            base.Configure(builder);
 
             builder.Property(u => u.FirstName)
                   .IsRequired()
@@ -25,11 +29,26 @@ namespace DataAccess.Configurations
 
             builder.Property(u => u.Email)
                    .IsRequired()
-                   .HasMaxLength(255);
+                   .HasMaxLength(320);
 
-            builder.Property(u => u.Password)
+            builder.Property(u => u.PasswordHash)
                    .IsRequired()
                    .HasMaxLength(500);
+
+            builder.Property(u => u.IsLocked)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            builder.Property(u => u.LastLoginUtc)
+                .IsRequired(false);
+
+            builder.Property(u => u.JobTitle)
+                .IsRequired(false)
+                .HasMaxLength(150);
+            builder.Property(u => u.Department)
+                .IsRequired(false)
+                .HasMaxLength(200);
+
 
 
             // Indexes

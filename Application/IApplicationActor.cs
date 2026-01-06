@@ -11,6 +11,6 @@ namespace Application
     {
         public int Id { get; }
         public string Email { get; }
-        public IReadOnlyCollection<string> ActorPermissions { get; }
+        public IReadOnlySet<string> ActorPermissions { get; }
     }
 }

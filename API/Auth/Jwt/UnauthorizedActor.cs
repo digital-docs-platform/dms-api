@@ -1,6 +1,6 @@
 ﻿using Application;
 
-namespace API.jwt
+namespace API.Auth.jwt
 {
     public class UnauthorizedActor : IApplicationActor
     {
@@ -8,6 +8,6 @@ namespace API.jwt
 
         public string Email => "";
 
-        public IReadOnlyCollection<string> ActorPermissions => new List<string> {};
+        public IReadOnlySet<string> ActorPermissions => new HashSet<string> {};
     }
 }

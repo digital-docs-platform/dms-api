@@ -1,4 +1,5 @@
-﻿using API.DTO.Requests.Auth;
+﻿using API.Auth.Cookies;
+using API.DTO.Requests.Auth;
 using API.DTO.Response;
 using Application.jwt;
 using Microsoft.AspNetCore.Mvc;
@@ -12,22 +13,30 @@ namespace API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IJwtManager _jwtManager;
-        public AuthController(IJwtManager manager)
+        private readonly IAuthCookieService _cookieService;
+     
+        public AuthController(IJwtManager manager, IAuthCookieService cookieService)
         {
             _jwtManager = manager;
+            _cookieService = cookieService;
         }
 
-        // POST api/<AuthController>
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest req, CancellationToken ct)
         {
+
             string token = await _jwtManager.MakeToken(req.Email, req.Password, ct);
+            _cookieService.SetAccessToken(Response, token);
+            
             return Ok(new SuccessResponse
             {
-                Message = "You have successfully loged in . . .",
-                Data = new { Token = token }
+                Message = "Logged in",
+                Data = null
             });
         }
+
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(CancellationToken ct)
@@ -39,6 +48,13 @@ namespace API.Controllers
                 Message = "Account created.",
                 Data = null
             });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            _cookieService.ClearAccessToken(Response);
+            return Ok();
         }
 
     }

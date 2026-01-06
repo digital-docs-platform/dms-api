@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.BaseEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -18,18 +18,6 @@ namespace DataAccess.Configurations.Common
 
             builder.Property(e => e.Id)
                     .ValueGeneratedOnAdd();
-
-            builder.Property(x => x.CreatedAt).IsRequired();
-
-            builder.Property(e => e.ModifiedAt)
-                 .IsRequired(false);
-
-            builder.Property(e => e.DeletedAt)
-                   .IsRequired(false);
-
-            builder.Property(e => e.IsActive)
-                   .IsRequired()
-                   .HasDefaultValue(true);
         }
     }
 }

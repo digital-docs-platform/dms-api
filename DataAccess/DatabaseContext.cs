@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.BaseEntities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -38,19 +39,31 @@ namespace DataAccess
         {
             var now = DateTime.UtcNow;
 
-            foreach (var entry in ChangeTracker.Entries<Entity>())
+            // Auditable: Created/Modified
+            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAt = now;
-                    //entry.Entity.IsActive = true;
+                    entry.Entity.CreatedAtUtc = now;
                 }
-
-                if (entry.State == EntityState.Modified)
+                else if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.ModifiedAt = now;
+                    entry.Entity.ModifiedAtUtc = now;
+                    entry.Property(e => e.CreatedAtUtc).IsModified = false;
                 }
             }
+
+            // Soft delete: samo za SoftDeletableEntity
+            foreach (var entry in ChangeTracker.Entries<SoftDeletableEntity>())
+            {
+                if (entry.State == EntityState.Deleted)
+                {
+                    entry.State = EntityState.Modified;
+                    entry.Entity.DeletedAtUtc = now;
+                }
+            }
+
+
         }
 
 
