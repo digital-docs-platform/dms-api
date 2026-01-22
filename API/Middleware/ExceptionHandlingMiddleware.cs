@@ -43,6 +43,16 @@ namespace API.Middleware
                     Data = null
                 });
             }
+            catch(UnauthorizedException ex)
+            {
+                context.Response.StatusCode = 401;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
             catch (RequestDataValidationException ex)
             {
                 context.Response.StatusCode = 400;
