@@ -8,8 +8,7 @@ namespace Application.Logging
 {
     public class AppError
     {
-        public Exception Exception { get; set; }
-        public string Email { get; set; }
         public Guid ErrorId { get; set; }
+
     }
 }

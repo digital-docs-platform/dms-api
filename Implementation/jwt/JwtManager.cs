@@ -42,7 +42,7 @@ namespace Implementation.jwt
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, "1"),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, email),
             };
 

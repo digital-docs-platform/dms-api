@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Application.PermissionHandling;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace Application
     {
         public int Id { get; }
         public string Email { get; }
-        public IReadOnlySet<string> ActorPermissions { get; }
+        //public IReadOnlySet<UserPermissionsDto> ActorPermissions { get; }
     }
 }

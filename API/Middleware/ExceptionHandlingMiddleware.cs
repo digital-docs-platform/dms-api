@@ -17,42 +17,55 @@ namespace API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Call the next delegate/middleware in the pipeline.
+
             try
             {
                 await _next(context);
             }
-            //catch (ValidationException ex)
-            //{
-            //    context.Response.StatusCode = 422;
 
-            //    var errors = ex.Errors.Select(x => new
-            //    {
-            //        x.ErrorMessage,
-            //        x.PropertyName
-            //    });
-
-            //    await context.Response.WriteAsJsonAsync(errors);
-            //}
-            //catch (UnauthorizedUseCaseExecutionException ex)
-            //{
-            //    context.Response.StatusCode = 401;
-            //}
-            //catch (UnauthorizedAccessException ex)
-            //{
-            //    context.Response.StatusCode = 401;
-            //}
-            //catch (EntityNotFoundException ex)
-            //{
-            //    context.Response.StatusCode = 404;
-            //    await context.Response.WriteAsJsonAsync(new
-            //    {
-            //        message = ex.Message
-            //    });
-            //}
-            catch(UnauthorizedException ex)
+            catch(UnauthenticatedException ex)
             {
                 context.Response.StatusCode = 401;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch(ForbiddenException ex)
+            {
+                context.Response.StatusCode = 403;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch (RequestDataValidationException ex)
+            {
+                context.Response.StatusCode = 400;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = ex.Errors
+                });
+            }
+            catch(EntityAlreadyExistsException ex)
+            {
+                context.Response.StatusCode = 400;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
+            catch(EntityNotFoundException ex)
+            {
+                context.Response.StatusCode = 404;
 
                 await context.Response.WriteAsJsonAsync(new ErrorResponse
                 {

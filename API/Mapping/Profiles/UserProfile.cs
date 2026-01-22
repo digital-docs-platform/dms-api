@@ -1,5 +1,6 @@
 ﻿using API.DTO.Requests.User;
-using Application.UseCases.DTO.User;
+using Application.UseCases.Commands.Requests.User;
+
 using AutoMapper;
 
 namespace API.Mapping.Profiles
@@ -9,7 +10,7 @@ namespace API.Mapping.Profiles
         public UserProfile()
         {
             // API request -> Application DTO
-            CreateMap<CreateUserRequest, CreateUserDto>();
+            CreateMap<CreateUserDto, CreateUserRequest>();
         }
     }
 }

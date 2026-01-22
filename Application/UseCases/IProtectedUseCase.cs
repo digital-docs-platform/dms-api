@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases
 {
+    public enum PermissionScope
+    {
+        Global = 1,
+        DocumentType = 2
+    }
+
+
     public interface IProtectedUseCase : IUseCase
     {
-        IEnumerable<string> RequiredPermissions { get; } // Documents.Create
+        string RequiredPermission { get; } // Documents.Create
+        public PermissionScope Scope { get; }
     }
 }

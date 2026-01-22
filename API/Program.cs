@@ -1,20 +1,36 @@
 ﻿using API.Auth.Cookies;
-using API.Auth.jwt;
+
 using API.Middleware;
 using Application;
 using Application.jwt;
+using Application.Jwt;
 using Application.PermissionHandling;
+using Application.PermissionHandling.Resolver;
 using Application.Security.Cryptography;
+using Application.Seeding;
 using Application.UseCaseHandling;
+using Application.UseCaseHandling.CQReslover;
 using Application.UseCases.Commands;
+using Application.UseCases.Queries;
+using Application.Validation;
 using DataAccess;
+using FluentValidation;
 using Implementation.jwt;
+using Implementation.PermissionHandling;
+using Implementation.PermissionHandling.Resolver;
 using Implementation.Security.Cryptography;
+using Implementation.Seeding;
+using Implementation.UseCaseHandling;
+using Implementation.UseCaseHandling.CQResolver;
+using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.User;
+using Implementation.UseCases.EntityFramework.Queries.User;
+using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +51,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("client", p =>
-        p.WithOrigins("http://localhost:5173")
+        p.WithOrigins("http://localhost:4200")
          .AllowAnyHeader()
          .AllowAnyMethod()
          .AllowCredentials());
@@ -99,11 +115,24 @@ builder.Services.AddScoped<IApplicationActor>(sp =>
     if (user?.Identity?.IsAuthenticated != true)
         return new UnauthorizedActor();
 
-    var sub = user.FindFirst("sub")?.Value;
-    if (!int.TryParse(sub, out var userId))
+    var idValue =
+        user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? user.FindFirst("sub")?.Value;
+
+    if (!int.TryParse(idValue, out var userId))
         return new UnauthorizedActor();
 
-    return new JwtActor();
+    var email =
+        user.FindFirst(ClaimTypes.Email)?.Value
+        ?? user.FindFirst("email")?.Value
+        ?? "";
+
+
+    return new JwtActor
+    {
+        Id = userId,
+        Email = email
+    };
 });
 
 
@@ -111,14 +140,27 @@ builder.Services.AddScoped<IApplicationActor>(sp =>
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddScoped<IAuthCookieService, AuthCookieService>();
-builder.Services.AddScoped<IPermissionHandler, PermissionHandler>();
 
+
+builder.Services.AddScoped<IPermissionHandler, PermissionHandler>();
+builder.Services.AddScoped<IPermissionProvider, PermissionProvider>();
+builder.Services.AddScoped<IDocumentTypeResolver, DocumentTypeResolver>();
+
+
+builder.Services.AddValidatorsFromAssemblyContaining<ApplicationMarker>();
+builder.Services.AddScoped<IRequestValidation, RequestValidation>();
+
+builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
 // COMMAND SERVICES
 
 builder.Services.AddScoped<ICommandHandler, CommandHandler>();
+builder.Services.AddScoped<ICommandResolver, CommandResolver>();
 
-builder.Services.AddTransient<ICreateUserCommand, CreateUserCommand>();
+
+
+builder.Services.AddTransient<ICreateUserCommand, EFCreateUserCommand>();
+builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCommand>();
 
 //End of command services
 
@@ -127,6 +169,9 @@ builder.Services.AddTransient<ICreateUserCommand, CreateUserCommand>();
 // QUERY SERVICES
 
 builder.Services.AddScoped<IQueryHandler, QueryHandler>();
+builder.Services.AddScoped<IQueryResolver, QueryResolver>();
+
+builder.Services.AddTransient<IGetMeQuery, EFGetMeQuery>();
 
 //END OF QUERY SERVICES
 
@@ -155,5 +200,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<IDatabaseSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.Run();

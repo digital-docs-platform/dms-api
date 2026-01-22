@@ -8,9 +8,9 @@ namespace Application.PermissionHandling
 {
     public interface IPermissionHandler
     {
-        public void EnsureHas(string permission);
-        public void EnsureAll(IEnumerable<string> permissions);
-        public bool Has(string permission);
-        public bool HasAll(IEnumerable<string> permissions);
+        public Task EnsureAsync(string permissionCode, int? documentTypeId, CancellationToken ct = default);
+        //public void EnsureAll(IEnumerable<string> permissions);
+        //public bool Has(string permission);
+        //public bool HasAll(IEnumerable<string> permissions);
     }
 }

@@ -18,9 +18,9 @@ namespace Domain.Entities
         public bool IsLocked { get; set; } = false;
         public DateTime? LastLoginUtc {  get; set; }
 
-        //public ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();
+        //public ICollection<UserPermissionGrant> UserPermissions { get; set; } = new List<UserPermissionGrant>();
         //public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
-       
+
 
     }
 }

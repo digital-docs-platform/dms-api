@@ -16,10 +16,18 @@ namespace DataAccess
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<DocumentType> DocumentTypes { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<UserPermissionGrant> UserPermissionGrants { get; set; }
+        public DbSet<DocumentTypeFieldDefinition> DocumentTypeFieldDefinitions { get; set; }
+        public DbSet<DocumentTypeFieldValue> DocumentTypeFieldValues { get; set; }
+        public DbSet<DocumentVersion> DocumentVersions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(DatabaseContext).Assembly);
         }
 

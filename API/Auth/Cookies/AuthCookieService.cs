@@ -18,7 +18,7 @@ namespace API.Auth.Cookies
             var minutes = int.TryParse(minutesStr, out var m) ? m : 15;
 
             var sameSite = ParseSameSite(_config["AuthCookie:SameSite"], SameSiteMode.Strict);
-            var secure = ParseBool(_config["AuthCookie:Secure"], defaultValue: true);
+            var secure = ParseBool(_config["AuthCookie:Secure"], defaultValue: false);
 
             response.Cookies.Append(name, token, new CookieOptions
             {

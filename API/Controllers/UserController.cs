@@ -2,7 +2,7 @@
 using API.DTO.Response;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
-using Application.UseCases.DTO.User;
+using Application.UseCases.Commands.Requests.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,11 +25,11 @@ namespace API.Controllers
 
         // POST api/<UserController>
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest req, [FromServices] ICreateUserCommand command, CancellationToken ct)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto, [FromServices] ICreateUserCommand command, CancellationToken ct)
         {
-            var dto = _mapper.Map<CreateUserDto>(req);
+            CreateUserRequest request = _mapper.Map<CreateUserRequest>(dto);
 
-            await _commandHandler.HandleAsync(command, dto, ct);
+            await _commandHandler.HandleAsync(command, request, ct);
 
             return Ok(new SuccessResponse
             {

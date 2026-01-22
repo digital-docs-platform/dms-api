@@ -2,9 +2,12 @@
 using API.DTO.Requests.Auth;
 using API.DTO.Response;
 using Application.jwt;
+using Application.UseCaseHandling;
+using Application.UseCases.Queries;
+using Application.UseCases.Queries.Response;
+using Application.UseCases.Queries.Search;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Controllers
 {
@@ -14,11 +17,26 @@ namespace API.Controllers
     {
         private readonly IJwtManager _jwtManager;
         private readonly IAuthCookieService _cookieService;
+        private readonly IQueryHandler _queryHandler;
      
-        public AuthController(IJwtManager manager, IAuthCookieService cookieService)
+        public AuthController(IJwtManager manager, IAuthCookieService cookieService, IQueryHandler queryHandler)
         {
             _jwtManager = manager;
             _cookieService = cookieService;
+            _queryHandler = queryHandler;
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> Me([FromServices] IGetMeQuery query, CancellationToken ct )
+        {
+            var result = await _queryHandler.HandleAsync( query, new EmptySearch(),ct);
+
+
+            return Ok(new SuccessResponse
+            {
+                Message = "Successfully found user info . . .",
+                Data = result
+            });
         }
 
 
@@ -50,11 +68,16 @@ namespace API.Controllers
             });
         }
 
-        [HttpPost("logout")]
+        [HttpDelete("logout")]
         public IActionResult Logout()
         {
             _cookieService.ClearAccessToken(Response);
-            return Ok();
+
+            return StatusCode(204,  new SuccessResponse
+            {
+                Data = null,
+                Message = "User successfully logged out"
+            });
         }
 
     }
