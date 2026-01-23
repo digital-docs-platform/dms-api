@@ -27,7 +27,7 @@ namespace Implementation.Seeding
             const string email = "admin@admin.com";
             const string password = "@dmin123";
 
-            // 1) Ensure admin user exists
+            // admin user exists
             var admin = await _db.Users.SingleOrDefaultAsync(x => x.Email == email, ct);
             if (admin is null)
             {
@@ -45,8 +45,8 @@ namespace Implementation.Seeding
                 await _db.SaveChangesAsync(ct);
             }
 
-            // 2) Ensure system.admin permission exists in DB (seeded via HasData)
-            var adminPermCode = PermissionCodes.SystemAdmin; // "system.admin"
+            //Ensure system.admin permission exists in DB (seeded via HasData)
+            var adminPermCode = PermissionCodes.SystemAdmin;
             var adminPermId = await _db.Permissions
                 .AsNoTracking()
                 .Where(p => p.Code == adminPermCode)
@@ -56,7 +56,7 @@ namespace Implementation.Seeding
             if (adminPermId is null)
                 throw new InvalidOperationException($"Permission '{adminPermCode}' not found. Seed permissions first.");
 
-            // 3) Ensure grant exists
+            // Ensure grant exists
             var alreadyGranted = await _db.UserPermissionGrants
                 .AsNoTracking()
                 .AnyAsync(g => g.UserId == admin.Id && g.PermissionId == adminPermId.Value, ct);

@@ -90,7 +90,7 @@ builder.Services
           ClockSkew = TimeSpan.FromSeconds(30)
       };
 
-      // ključni deo: uzmi token iz HttpOnly cookie-ja
+      //uzmi token iz HttpOnly cookie-ja
       options.Events = new JwtBearerEvents
       {
           OnMessageReceived = context =>

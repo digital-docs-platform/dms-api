@@ -28,7 +28,6 @@ namespace DataAccess.Configurations
             builder.Property(x => x.AddedBy)
                    .IsRequired();
 
-            // (opc) unique name ako hoćeš
             builder.HasIndex(x => x.Name)
                    .IsUnique();
         }

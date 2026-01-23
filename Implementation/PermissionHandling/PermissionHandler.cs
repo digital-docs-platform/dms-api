@@ -19,7 +19,7 @@ namespace Implementation.PermissionHandling
         public async Task EnsureAsync(string permissionCode, int? documentTypeId, CancellationToken ct = default)
         {
             if (_actor is UnauthorizedActor || _actor.Id <= 0)
-                throw new UnauthorizedAccessException("User is not authenticated.");
+                throw new UnauthorizedException("User is not authenticated.");
 
             var perms = await _permissionProvider.GetUserPermissionsAsync(_actor.Id, ct);
 
@@ -31,7 +31,7 @@ namespace Implementation.PermissionHandling
                                && (p.DocumentTypeId == documentTypeId || p.DocumentTypeId is null));
 
             if (!allowed)
-                throw new UnauthorizedAccessException("Access denied.");
+                throw new UnauthorizedException("Access denied.");
         }
     }
 }

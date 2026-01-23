@@ -24,7 +24,7 @@ namespace API.Controllers
         }
 
         // POST api/<UserController>
-        [HttpPost]
+        [HttpPost("new")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto, [FromServices] ICreateUserCommand command, CancellationToken ct)
         {
             CreateUserRequest request = _mapper.Map<CreateUserRequest>(dto);

@@ -1,4 +1,5 @@
-﻿using Application.Security.Cryptography;
+﻿using Application.Exceptions;
+using Application.Security.Cryptography;
 using Application.UseCases;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.User;
@@ -46,7 +47,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
 
 
             if (exists)
-                throw new Exception("User with this email already exists.");
+                throw new EntityAlreadyExistsException("User with this email already exists.");
 
 
             var user = new Domain.Entities.User

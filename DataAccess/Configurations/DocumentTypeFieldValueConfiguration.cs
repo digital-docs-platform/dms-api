@@ -31,7 +31,7 @@ namespace DataAccess.Configurations
             builder.HasIndex(x => new { x.VersionId, x.FieldDefinitionId })
                    .IsUnique();
 
-            // Indeksi za pretragu (opciono ali korisno)
+            // Indeksi za pretragu
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueString });
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueInt });
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueDecimal });

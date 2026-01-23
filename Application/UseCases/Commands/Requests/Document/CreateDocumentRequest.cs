@@ -10,6 +10,7 @@ namespace Application.UseCases.Commands.Requests.Document
 {
     public sealed class CreateDocumentRequest : IHasDocumentTypeId
     {
+        public Guid Id { get; set; } = Guid.NewGuid();
         public int DocumentTypeId { get; set; }
         public string? Title { get; set; }
 

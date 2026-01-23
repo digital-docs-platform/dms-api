@@ -9,7 +9,6 @@ namespace API.Mapping.Profiles
     {
         public UserProfile()
         {
-            // API request -> Application DTO
             CreateMap<CreateUserDto, CreateUserRequest>();
         }
     }

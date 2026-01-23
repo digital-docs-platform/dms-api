@@ -7,26 +7,22 @@ using Application.UseCases.Queries.Response;
 using Application.UseCases.Queries.Search;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Implementation.UseCases.EntityFramework.Queries.User
 {
     public class EFGetMeQuery : EFUseCase, IGetMeQuery
     {
         public int Id => 2;
-
         public string Name => "User Informations";
-
         public string Description => "Get user informations";
 
         private readonly IApplicationActor _actor;
         private readonly IPermissionProvider _permissionProvider;
-        public EFGetMeQuery(IApplicationActor actor, DatabaseContext context, IPermissionProvider permissionProvider)
+
+        public EFGetMeQuery(
+            IApplicationActor actor,
+            DatabaseContext context,
+            IPermissionProvider permissionProvider)
             : base(context)
         {
             _actor = actor;
@@ -35,15 +31,57 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
 
         public async Task<GetMeResponse> ExecuteAsync(EmptySearch search, CancellationToken ct)
         {
-
             if (_actor is UnauthorizedActor || _actor.Id <= 0)
                 throw new UnauthenticatedException("User is not authenticated.");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == _actor.Id, ct);
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == _actor.Id, ct);
+
             if (user is null)
-                throw new EntityNotFoundException("User not found."); 
+                throw new EntityNotFoundException("User not found.");
 
             var perms = await _permissionProvider.GetUserPermissionsAsync(user.Id, ct);
+
+            var isAdmin = perms.Any(p => p.PermissionCode == PermissionCodes.SystemAdmin);
+
+           
+            bool canUsers = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.UsersRead);
+            bool canGroups = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.GroupsRead);
+            bool canDocumentTypes = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.DocumentTypesRead);
+
+
+            var uiDocumentTypes = canDocumentTypes
+                ? await _context.DocumentTypes
+                    .AsNoTracking()
+                    .OrderBy(dt => dt.Name)
+                    .Select(dt => new GetMeLookupItemResponse
+                    {
+                        Id = dt.Id,
+                        Name = dt.Name
+                    })
+                    .ToListAsync(ct) : new List<GetMeLookupItemResponse>();
+
+            var uiUsers = canUsers
+                ? await _context.Users
+                .AsNoTracking()
+                .OrderBy(dt => dt.FirstName)
+                .Select(u => new GetMeLookupItemResponse
+                {
+                    Id = u.Id,
+                    Name = u.FirstName + " " + u.LastName,
+                }).ToListAsync(ct) : new List<GetMeLookupItemResponse>();
+
+            var uiGroups = canGroups
+                ? await _context.Groups
+                    .AsNoTracking()
+                    .OrderBy(g => g.Name)
+                    .Select(g => new GetMeLookupItemResponse
+                    {
+                        Id = g.Id,
+                        Name = g.Name
+                    })
+                    .ToListAsync(ct) : new List<GetMeLookupItemResponse>();
 
             var response = new GetMeResponse
             {
@@ -52,14 +90,28 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
                 LastName = user.LastName,
                 Department = user.Department,
                 JobTitle = user.JobTitle,
-                IsAdmin = perms.Any(p => p.PermissionCode == PermissionCodes.SystemAdmin),
+
+                IsAdmin = isAdmin,
                 IsLocked = user.IsLocked,
+
                 Permissions = perms.Select(p => new GetMePermissionsResponse
                 {
                     Code = p.PermissionCode,
                     DocumentTypeId = p.DocumentTypeId
-                }).ToList()
+                }).ToList(),
 
+                Ui = new GetMeUIResponse
+                {
+                    Can = new GetMeUICanResponse
+                    {
+                        Users = canUsers,
+                        Groups = canGroups,
+                        DocumentTypes = canDocumentTypes
+                    },
+                    DocumentTypes = uiDocumentTypes,
+                    Users = uiUsers,
+                    Groups = uiGroups
+                }
             };
 
             return response;

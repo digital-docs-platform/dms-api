@@ -39,7 +39,7 @@ namespace DataAccess.Configurations
                    .IsRequired()
                    .HasMaxLength(512);
 
-            // Jedinstveno: verzija broj X postoji samo jednom po dokumentu
+         
             builder.HasIndex(x => new { x.DocumentId, x.VersionNumber })
                    .IsUnique();
 
