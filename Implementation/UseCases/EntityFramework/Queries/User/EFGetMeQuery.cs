@@ -64,6 +64,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
 
             var uiUsers = canUsers
                 ? await _context.Users
+                .Where(u => u.Id != _actor.Id)
                 .AsNoTracking()
                 .OrderBy(dt => dt.FirstName)
                 .Select(u => new GetMeLookupItemResponse

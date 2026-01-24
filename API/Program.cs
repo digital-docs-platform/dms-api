@@ -172,6 +172,7 @@ builder.Services.AddScoped<IQueryHandler, QueryHandler>();
 builder.Services.AddScoped<IQueryResolver, QueryResolver>();
 
 builder.Services.AddTransient<IGetMeQuery, EFGetMeQuery>();
+builder.Services.AddTransient<IGetUserByIdQuery, EFGetUserByIdQuery>();
 
 //END OF QUERY SERVICES
 

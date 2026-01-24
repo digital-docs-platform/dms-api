@@ -3,6 +3,8 @@ using API.DTO.Response;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.User;
+using Application.UseCases.Queries;
+using Application.UseCases.Queries.Search;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +17,30 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private readonly ICommandHandler _commandHandler;
+        private readonly IQueryHandler _queryHandler;
         private readonly IMapper _mapper;
 
-        public UserController(ICommandHandler commandHandler, IMapper mapper)
+        public UserController(ICommandHandler commandHandler, IQueryHandler queryHandler,IMapper mapper)
         {
             _commandHandler = commandHandler;
+            _queryHandler = queryHandler;
             _mapper = mapper;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById([FromRoute] IdSearch search, [FromServices] IGetUserByIdQuery query, CancellationToken ct)
+        {
+            var response = await _queryHandler.HandleAsync(query, search, ct);
+
+
+            return StatusCode(201, new SuccessResponse
+            {
+                Message = "Successfully found user",
+                Data = new
+                {
+                    User = response
+                }
+            });
         }
 
         // POST api/<UserController>
