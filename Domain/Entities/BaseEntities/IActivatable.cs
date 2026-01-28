@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.BaseEntities
 {
-    public abstract class AuditableEntity : Entity
+    public interface IActivatable
     {
-        public DateTime CreatedAtUtc { get; set; }
-        public DateTime? ModifiedAtUtc { get; set; }
+        bool IsActive { get; set; }
     }
 }

@@ -40,7 +40,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
         {
 
             var exists = await _context.DocumentTypes
-                .AnyAsync(x => x.DeletedAtUtc == null && x.Name.ToLower() == request.Name.ToLower(), ct);
+                .AnyAsync(x => x.DeletedAt == null && x.Name.ToLower() == request.Name.ToLower(), ct);
 
             if (exists)
                 throw new EntityAlreadyExistsException("Document type with this name already exists.");

@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class UserPermissionGrantConfiguration : EntityConfiguration<UserPermissionGrant>
+    public class UserPermissionGrantConfiguration : EntityConfiguration<UserPermissionGrant, int>
     {
         public  void Configure(EntityTypeBuilder<UserPermissionGrant> builder)
         {
+            base.Configure(builder);
 
             builder
                .HasIndex(x => new { x.UserId, x.PermissionId, x.DocumentTypeId })

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class DocumentTypeFieldValue : AuditableEntity
+    public class DocumentTypeFieldValue : Entity, IAuditable
     {
-        public int VersionId { get; set; }
+        public Guid VersionId { get; set; }
         public DocumentVersion Version { get; set; }
 
         public int FieldDefinitionId { get; set; }
@@ -20,5 +20,7 @@ namespace Domain.Entities
         public decimal? ValueDecimal { get; set; }
         public DateTime? ValueDate { get; set; }
         public bool? ValueBool { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

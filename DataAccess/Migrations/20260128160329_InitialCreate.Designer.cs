@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260111162151_initial")]
-    partial class initial
+    [Migration("20260128160329_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,27 +27,25 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Document", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DocumentTypeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
@@ -55,6 +53,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("Documents", (string)null);
                 });
@@ -70,12 +70,10 @@ namespace DataAccess.Migrations
                     b.Property<int>("AddedBy")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -83,7 +81,10 @@ namespace DataAccess.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -92,6 +93,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -112,17 +115,15 @@ namespace DataAccess.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DataType")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -132,6 +133,9 @@ namespace DataAccess.Migrations
 
                     b.Property<int>("DocumentTypeId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsRequired")
                         .ValueGeneratedOnAdd()
@@ -153,13 +157,15 @@ namespace DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("DocumentTypeId", "Code")
                         .IsUnique();
@@ -175,15 +181,13 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("FieldDefinitionId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<bool?>("ValueBool")
@@ -203,8 +207,8 @@ namespace DataAccess.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<int>("VersionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VersionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -221,11 +225,8 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.DocumentVersion", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ChangeNote")
                         .HasColumnType("nvarchar(max)");
@@ -235,16 +236,17 @@ namespace DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DocumentId")
+                    b.Property<int>("CreatedBy")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -257,7 +259,10 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("StorageKey")
@@ -269,6 +274,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("DocumentId", "VersionNumber")
                         .IsUnique();
@@ -284,10 +291,10 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -295,11 +302,12 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(300)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -308,6 +316,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -350,16 +362,17 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -372,6 +385,8 @@ namespace DataAccess.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
+                    b.HasIndex("IsActive");
+
                     b.HasIndex("Name")
                         .IsUnique();
 
@@ -382,104 +397,117 @@ namespace DataAccess.Migrations
                         {
                             Id = 1,
                             Code = "documents.read",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View/list documents",
+                            IsActive = false,
                             Name = "Read documents"
                         },
                         new
                         {
                             Id = 2,
                             Code = "documents.write",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create new document",
+                            IsActive = false,
                             Name = "Create documents"
                         },
                         new
                         {
                             Id = 4,
                             Code = "documents.delete",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete/soft-delete document",
+                            IsActive = false,
                             Name = "Delete documents"
                         },
                         new
                         {
                             Id = 5,
                             Code = "documents.version.add",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Add new document version",
+                            IsActive = false,
                             Name = "Add version"
                         },
                         new
                         {
                             Id = 6,
                             Code = "documents.download",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Download document file",
+                            IsActive = false,
                             Name = "Download file"
                         },
                         new
                         {
                             Id = 7,
                             Code = "documents.upload",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Upload document file",
+                            IsActive = false,
                             Name = "Upload file"
                         },
                         new
                         {
                             Id = 8,
                             Code = "documents.metadata.edit",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit document metadata fields",
+                            IsActive = false,
                             Name = "Edit metadata"
                         },
                         new
                         {
                             Id = 9,
                             Code = "documentTypes.read",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View document types",
+                            IsActive = false,
                             Name = "Read document types"
                         },
                         new
                         {
                             Id = 10,
                             Code = "documentTypes.manage",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create/update document types and fields",
+                            IsActive = false,
                             Name = "Manage document types"
                         },
                         new
                         {
                             Id = 11,
                             Code = "users.read",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View users",
+                            IsActive = false,
                             Name = "Read users"
                         },
                         new
                         {
                             Id = 12,
                             Code = "users.manage",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create/update/block users",
+                            IsActive = false,
                             Name = "Manage users"
                         },
                         new
                         {
                             Id = 13,
                             Code = "permissions.manage",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Grant/revoke permissions",
+                            IsActive = false,
                             Name = "Manage permissions"
                         },
                         new
                         {
                             Id = 14,
                             Code = "system.admin",
-                            CreatedAtUtc = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Administrative access within an organization (global)",
+                            IsActive = false,
                             Name = "System admin"
                         });
                 });
@@ -492,10 +520,10 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedAtUtc")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAtUtc")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Department")
@@ -513,9 +541,10 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsLocked")
                         .ValueGeneratedOnAdd()
@@ -534,7 +563,7 @@ namespace DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("ModifiedAtUtc")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
@@ -546,6 +575,10 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
 
                     b.ToTable("Users", (string)null);
                 });
@@ -636,11 +669,13 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.DocumentVersion", b =>
                 {
-                    b.HasOne("Domain.Entities.Document", null)
-                        .WithMany()
+                    b.HasOne("Domain.Entities.Document", "DocumentInstance")
+                        .WithMany("DocumentVersions")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DocumentInstance");
                 });
 
             modelBuilder.Entity("Domain.Entities.GroupPermission", b =>
@@ -702,6 +737,11 @@ namespace DataAccess.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Document", b =>
+                {
+                    b.Navigation("DocumentVersions");
                 });
 
             modelBuilder.Entity("Domain.Entities.DocumentType", b =>

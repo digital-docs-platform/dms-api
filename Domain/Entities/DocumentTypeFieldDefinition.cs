@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class DocumentTypeFieldDefinition : SoftDeletableEntity
+    public class DocumentTypeFieldDefinition : Entity, ISoftDeletable, IAuditable
     {
         public int DocumentTypeId { get; set; }
         public DocumentType DocumentType { get; set; }
@@ -23,6 +23,9 @@ namespace Domain.Entities
         public int SortOrder { get; set; }
         public bool IsSearchable { get; set; }
         public bool IsSortable { get; set; }
-
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

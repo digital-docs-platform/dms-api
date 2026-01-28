@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.BaseEntities
 {
-    public abstract class SoftDeletableEntity : AuditableEntity
+    public abstract class BaseEntity<TKey>
+       where TKey : notnull
     {
-        public DateTime? DeletedAtUtc { get; set; }
+        public TKey Id { get; set; } = default!;
     }
+
 }

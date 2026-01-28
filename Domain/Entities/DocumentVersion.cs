@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class DocumentVersion : SoftDeletableEntity
+    public class DocumentVersion : GuidEntity, ISoftDeletable, IAuditable
     {
-        public int DocumentId { get; set; }
+        public Guid DocumentId { get; set; }
+        public Document DocumentInstance { get; set; } = default!;
         public int VersionNumber { get; set; }   // 1,2,3...
         public string? ChangeNote { get; set; }
         public bool IsCurrent { get; set; }
@@ -26,5 +27,9 @@ namespace Domain.Entities
 
         public ICollection<DocumentTypeFieldValue> FieldValues { get; set; }
             = new List<DocumentTypeFieldValue>();
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

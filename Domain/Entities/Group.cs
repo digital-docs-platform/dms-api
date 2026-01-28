@@ -7,10 +7,17 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Group : SoftDeletableActivatableEntity
+    public class Group : Entity, ISoftDeletable, IAuditable, IActivatable
     {
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+
         //ICollection<UserGroup> GroupUsers { get; set; } = new List<UserGroup>();
         //ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
     }

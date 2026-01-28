@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public sealed class DocumentVersionConfiguration : SoftDeletableConfiguration<DocumentVersion>
+    public sealed class DocumentVersionConfiguration : EntityConfiguration<DocumentVersion, Guid>
     {
         public override void Configure(EntityTypeBuilder<DocumentVersion> builder)
         {
@@ -43,11 +43,11 @@ namespace DataAccess.Configurations
             builder.HasIndex(x => new { x.DocumentId, x.VersionNumber })
                    .IsUnique();
 
-          
-            builder.HasOne<Document>()               
-                   .WithMany()                       
-                   .HasForeignKey(x => x.DocumentId)
-                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.DocumentInstance)
+                    .WithMany(d => d.DocumentVersions)
+                    .HasForeignKey(x => x.DocumentId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(x => x.FieldValues)
                    .WithOne(x => x.Version)

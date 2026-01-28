@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.BaseEntities
 {
-    public abstract class Entity : BaseEntity<int>
+    public interface IAuditable
     {
+        DateTime CreatedAt { get; set; }
+        DateTime? ModifiedAt { get; set; }
     }
 }

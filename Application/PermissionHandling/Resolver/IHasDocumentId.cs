@@ -2,6 +2,6 @@
 {
     public interface IHasDocumentId
     {
-        public int DocumentId { get; set; }
+        public Guid DocumentId { get; set; }
     }
 }

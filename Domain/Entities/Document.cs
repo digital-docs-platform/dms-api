@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Document : SoftDeletableEntity
+    public class Document : GuidEntity, ISoftDeletable, IAuditable
     {
         public string Title { get; set; }
         public int DocumentTypeId { get; set; }
         public int CreatedBy { get; set; }
         public ICollection<DocumentVersion> DocumentVersions { get; set; } = new List<DocumentVersion>();
-
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

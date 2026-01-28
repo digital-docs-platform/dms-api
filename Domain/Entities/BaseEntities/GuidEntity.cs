@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.BaseEntities
 {
-    public class SoftDeletableActivatableEntity : SoftDeletableEntity
+    public abstract class GuidEntity : BaseEntity<Guid>
     {
-        public bool IsActive { get; set; } = true;
     }
 }
