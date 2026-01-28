@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class DocumentTypeFieldValueConfiguration : AuditableConfiguration<DocumentTypeFieldValue>
+    public class DocumentTypeFieldValueConfiguration : EntityConfiguration<DocumentTypeFieldValue, int>
     {
         public override void Configure(EntityTypeBuilder<DocumentTypeFieldValue> builder)
         {

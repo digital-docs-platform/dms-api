@@ -39,7 +39,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
         {
             
             var defs = await _context.DocumentTypeFieldDefinitions
-                .Where(d => d.DocumentTypeId == request.DocumentTypeId && d.DeletedAtUtc == null)
+                .Where(d => d.DocumentTypeId == request.DocumentTypeId && (d.DeletedAt == null && d.IsDeleted == false))
                 .ToListAsync(ct);
 
             var defsById = defs.ToDictionary(d => d.Id);

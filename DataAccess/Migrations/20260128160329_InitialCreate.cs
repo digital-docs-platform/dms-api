@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,14 +17,14 @@ namespace DataAccess.Migrations
                 name: "Documents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DocumentTypeId = table.Column<int>(type: "int", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -40,9 +40,10 @@ namespace DataAccess.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     AddedBy = table.Column<int>(type: "int", nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,10 +58,11 @@ namespace DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,8 +78,9 @@ namespace DataAccess.Migrations
                     Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,10 +101,11 @@ namespace DataAccess.Migrations
                     Department = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     IsLocked = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     LastLoginUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -112,19 +116,20 @@ namespace DataAccess.Migrations
                 name: "DocumentVersions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DocumentId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DocumentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     VersionNumber = table.Column<int>(type: "int", nullable: false),
                     ChangeNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     ContentType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FileSizeBytes = table.Column<long>(type: "bigint", nullable: false),
                     StorageKey = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -152,9 +157,10 @@ namespace DataAccess.Migrations
                     SortOrder = table.Column<int>(type: "int", nullable: false),
                     IsSearchable = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsSortable = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -263,15 +269,15 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VersionId = table.Column<int>(type: "int", nullable: false),
+                    VersionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FieldDefinitionId = table.Column<int>(type: "int", nullable: false),
                     ValueString = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     ValueInt = table.Column<int>(type: "int", nullable: true),
                     ValueDecimal = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: true),
                     ValueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ValueBool = table.Column<bool>(type: "bit", nullable: true),
-                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    ModifiedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -293,29 +299,39 @@ namespace DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Permissions",
-                columns: new[] { "Id", "Code", "CreatedAtUtc", "Description", "ModifiedAtUtc", "Name" },
+                columns: new[] { "Id", "Code", "CreatedAt", "Description", "IsActive", "ModifiedAt", "Name" },
                 values: new object[,]
                 {
-                    { 1, "documents.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View/list documents", null, "Read documents" },
-                    { 2, "documents.write", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create new document", null, "Create documents" },
-                    { 4, "documents.delete", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Delete/soft-delete document", null, "Delete documents" },
-                    { 5, "documents.version.add", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Add new document version", null, "Add version" },
-                    { 6, "documents.download", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Download document file", null, "Download file" },
-                    { 7, "documents.upload", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Upload document file", null, "Upload file" },
-                    { 8, "documents.metadata.edit", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Edit document metadata fields", null, "Edit metadata" },
-                    { 9, "documentTypes.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View document types", null, "Read document types" },
-                    { 10, "documentTypes.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update document types and fields", null, "Manage document types" },
-                    { 11, "users.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View users", null, "Read users" },
-                    { 12, "users.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update/block users", null, "Manage users" },
-                    { 13, "permissions.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Grant/revoke permissions", null, "Manage permissions" },
-                    { 14, "system.admin", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Administrative access within an organization (global)", null, "System admin" }
+                    { 1, "documents.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View/list documents", false, null, "Read documents" },
+                    { 2, "documents.write", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create new document", false, null, "Create documents" },
+                    { 4, "documents.delete", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Delete/soft-delete document", false, null, "Delete documents" },
+                    { 5, "documents.version.add", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Add new document version", false, null, "Add version" },
+                    { 6, "documents.download", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Download document file", false, null, "Download file" },
+                    { 7, "documents.upload", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Upload document file", false, null, "Upload file" },
+                    { 8, "documents.metadata.edit", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Edit document metadata fields", false, null, "Edit metadata" },
+                    { 9, "documentTypes.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View document types", false, null, "Read document types" },
+                    { 10, "documentTypes.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update document types and fields", false, null, "Manage document types" },
+                    { 11, "users.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View users", false, null, "Read users" },
+                    { 12, "users.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update/block users", false, null, "Manage users" },
+                    { 13, "permissions.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Grant/revoke permissions", false, null, "Manage permissions" },
+                    { 14, "system.admin", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Administrative access within an organization (global)", false, null, "System admin" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Documents_IsDeleted",
+                table: "Documents",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypeFieldDefinitions_DocumentTypeId_Code",
                 table: "DocumentTypeFieldDefinitions",
                 columns: new[] { "DocumentTypeId", "Code" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentTypeFieldDefinitions_IsDeleted",
+                table: "DocumentTypeFieldDefinitions",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypeFieldValues_FieldDefinitionId",
@@ -327,6 +343,11 @@ namespace DataAccess.Migrations
                 table: "DocumentTypeFieldValues",
                 columns: new[] { "VersionId", "FieldDefinitionId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentTypes_IsDeleted",
+                table: "DocumentTypes",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypes_Name",
@@ -341,9 +362,24 @@ namespace DataAccess.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_DocumentVersions_IsDeleted",
+                table: "DocumentVersions",
+                column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GroupPermission_PermissionId",
                 table: "GroupPermission",
                 column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_IsActive",
+                table: "Groups",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Groups_IsDeleted",
+                table: "Groups",
+                column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_Name",
@@ -356,6 +392,11 @@ namespace DataAccess.Migrations
                 table: "Permissions",
                 column: "Code",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Permissions_IsActive",
+                table: "Permissions",
+                column: "IsActive");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Permissions_Name",
@@ -393,6 +434,16 @@ namespace DataAccess.Migrations
                 table: "Users",
                 column: "Email",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_IsActive",
+                table: "Users",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_IsDeleted",
+                table: "Users",
+                column: "IsDeleted");
         }
 
         /// <inheritdoc />

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations
 {
-    public class GroupConfiguration : SoftDeletableActivatableConfiguration<Group>
+    public class GroupConfiguration : EntityConfiguration<Group, int>
     {
         public override void Configure(EntityTypeBuilder<Group> builder)
         {

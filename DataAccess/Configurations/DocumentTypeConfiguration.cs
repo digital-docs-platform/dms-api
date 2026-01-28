@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class DocumentTypeConfiguration : SoftDeletableConfiguration<DocumentType>
+    public class DocumentTypeConfiguration : EntityConfiguration<DocumentType, int>
     {
         public override void Configure(EntityTypeBuilder<DocumentType> builder)
         {

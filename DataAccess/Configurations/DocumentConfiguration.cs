@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class DocumentConfiguration : SoftDeletableConfiguration<Document>
+    public class DocumentConfiguration : EntityConfiguration<Document, Guid>
     {
         public override void Configure(EntityTypeBuilder<Document> builder)
         {

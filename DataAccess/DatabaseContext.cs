@@ -48,26 +48,27 @@ namespace DataAccess
             var now = DateTime.UtcNow;
 
             // Auditable: Created/Modified
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (var entry in ChangeTracker.Entries<IAuditable>())
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAtUtc = now;
+                    entry.Entity.CreatedAt = now;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.ModifiedAtUtc = now;
-                    entry.Property(e => e.CreatedAtUtc).IsModified = false;
+                    entry.Entity.ModifiedAt = now;
+                    entry.Property(e => e.CreatedAt).IsModified = false;
                 }
             }
 
             // Soft delete: samo za SoftDeletableEntity
-            foreach (var entry in ChangeTracker.Entries<SoftDeletableEntity>())
+            foreach (var entry in ChangeTracker.Entries<ISoftDeletable>())
             {
                 if (entry.State == EntityState.Deleted)
                 {
                     entry.State = EntityState.Modified;
-                    entry.Entity.DeletedAtUtc = now;
+                    entry.Entity.DeletedAt = now;
+                    entry.Entity.IsDeleted = true;
                 }
             }
 

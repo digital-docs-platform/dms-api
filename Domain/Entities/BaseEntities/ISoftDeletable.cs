@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities.BaseEntities
 {
-    public abstract class ActivatableEntity : AuditableEntity
+    public interface ISoftDeletable
     {
-        public bool IsActive { get; set; } = true;
+        bool IsDeleted { get; set; }
+        DateTime? DeletedAt { get; set; }
     }
 }

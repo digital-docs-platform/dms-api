@@ -38,7 +38,7 @@ namespace Implementation.Seeding
                     Email = email,
                     PasswordHash = _hasher.Hash(password),
                     IsActive = true,
-                    CreatedAtUtc = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _db.Users.Add(admin);
