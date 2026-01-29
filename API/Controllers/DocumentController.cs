@@ -23,10 +23,8 @@ namespace API.Controllers
         }
         // POST api/<DocumentController>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateDocumentDto dto, [FromServices] ICreateDocumentCommand command,CancellationToken ct)
+        public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request, [FromServices] ICreateDocumentCommand command,CancellationToken ct)
         {
-
-            CreateDocumentRequest request = _mapper.Map<CreateDocumentRequest>(dto);
             await _commandHandler.HandleAsync(command , request, ct);
 
             

@@ -2,6 +2,7 @@
 
 using API.Middleware;
 using Application;
+using Application.DocumentFields;
 using Application.jwt;
 using Application.Jwt;
 using Application.PermissionHandling;
@@ -22,6 +23,7 @@ using Implementation.Security.Cryptography;
 using Implementation.Seeding;
 using Implementation.UseCaseHandling;
 using Implementation.UseCaseHandling.CQResolver;
+using Implementation.UseCases.EntityFramework.Commands.Document;
 using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.User;
@@ -152,6 +154,8 @@ builder.Services.AddScoped<IRequestValidation, RequestValidation>();
 
 builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
+builder.Services.AddScoped<IFieldValueMapper, FieldValueMapper>();
+
 // COMMAND SERVICES
 
 builder.Services.AddScoped<ICommandHandler, CommandHandler>();
@@ -161,6 +165,7 @@ builder.Services.AddScoped<ICommandResolver, CommandResolver>();
 
 builder.Services.AddTransient<ICreateUserCommand, EFCreateUserCommand>();
 builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCommand>();
+builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>();
 
 //End of command services
 

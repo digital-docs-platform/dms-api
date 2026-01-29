@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.DocumentFields;
 using Application.Exceptions;
 using Application.PermissionHandling;
 using Application.UseCases;
@@ -7,94 +8,160 @@ using Application.UseCases.Commands.Requests.Document;
 using DataAccess;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Implementation.UseCases.EntityFramework.Commands.Document
 {
     public class EFCreateDocumentCommand : EFUseCase, ICreateDocumentCommand
     {
         public string RequiredPermission => PermissionCodes.DocumentsWrite;
-
         public PermissionScope Scope => PermissionScope.DocumentType;
 
         public int Id => 4;
-
         public string Name => "Create new document";
-
         public string Description => "Create new instance that represents a document (not new DocumentVersion)";
 
-
         private readonly IApplicationActor _actor;
-        public EFCreateDocumentCommand(DatabaseContext context, IApplicationActor actor) : base(context)
+        private readonly IFieldValueMapper _fieldValueMapper;
+
+        public EFCreateDocumentCommand(
+            DatabaseContext context,
+            IApplicationActor actor,
+            IFieldValueMapper fieldValueMapper) : base(context)
         {
             _actor = actor;
+            _fieldValueMapper = fieldValueMapper;
         }
 
         public async Task ExecuteAsync(CreateDocumentRequest request, CancellationToken ct)
         {
-            
+            var errors = new List<ValidationError>();
+
+            // =======================
+            // DB VALIDACIJE (OBAVEZNE)
+            // =======================
+            // 1) Proveri da li postoji DocumentType za dati DocumentTypeId (i da nije soft-deleted).
+            // 2) Učitaj FieldDefinition-ove za taj DocumentType (bez obrisanih).
+            // 3) Proveri da li svi poslati FieldDefinitionId stvarno pripadaju tom DocumentType.
+            // 4) Proveri required polja po definiciji (da nisu izostavljena ili prazna).
+            // 5) Proveri da li se poslata vrednost može mapirati u tip definisan u bazi (DataType).
+            // =======================
+
+            var docTypeExists = await _context.DocumentTypes
+                .AnyAsync(dt => dt.Id == request.DocumentTypeId && dt.IsDeleted == false, ct);
+
+            if (!docTypeExists)
+            {
+                errors.Add(new ValidationError(nameof(request.DocumentTypeId), "DocumentType not found."));
+                throw new RequestDataValidationException(errors);
+            }
+
             var defs = await _context.DocumentTypeFieldDefinitions
-                .Where(d => d.DocumentTypeId == request.DocumentTypeId && (d.DeletedAt == null && d.IsDeleted == false))
+                .Where(d => d.DocumentTypeId == request.DocumentTypeId && d.IsDeleted == false)
                 .ToListAsync(ct);
 
             var defsById = defs.ToDictionary(d => d.Id);
 
-            
-            var inputsById = request.FieldsInput.ToDictionary(f => f.FieldDefinitionId);
+            // 3) Unknown fieldDefinitionId (ne pripada doc type-u)
+            foreach (var input in request.FieldsInput)
+            {
+                if (!defsById.ContainsKey(input.FieldDefinitionId))
+                {
+                    errors.Add(new ValidationError(
+                        property: $"fieldsInput[{input.FieldDefinitionId}]",
+                        message: "Unknown fieldDefinitionId for given documentType."
+                    ));
+                }
+            }
 
-            //foreach (var input in request.FieldsInput)
-            //    if (!defsById.ContainsKey(input.FieldDefinitionId))
-            ////        throw new RequestDataValidationException(new[]
-            ////        {
-            ////    $"FieldDefinitionId={input.FieldDefinitionId} does not belong to DocumentTypeId={request.DocumentTypeId}."
-            ////});
+            // 4) Missing required fields
+            foreach (var def in defs.Where(d => d.IsRequired))
+            {
+                var inp = request.FieldsInput.FirstOrDefault(x => x.FieldDefinitionId == def.Id);
 
-            //var missingRequired = defs
-            //    .Where(d => d.IsRequired)
-            //    .Where(d => !inputsById.TryGetValue(d.Id, out var inp) || IsNullOrEmpty(inp.Value))
-            //    .Select(d => d.Code ?? d.Id.ToString())
-            //    .ToList();
+                if (inp == null)
+                {
+                    errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), "Required field missing."));
+                    continue;
+                }
 
-            //if (missingRequired.Count > 0)
-            //    throw new RequestDataValidationException(missingRequired.Select(x => $"Required field missing: {x}").ToList());
+                if (IsEmptyJson(inp.Value))
+                {
+                    errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), "Required field value is empty."));
+                }
+            }
 
-            
+            if (errors.Count > 0)
+                throw new RequestDataValidationException(errors);
+
+            // Kreiraj verziju + values
             var version = new DocumentVersion
             {
+                Id = Guid.NewGuid(),
                 VersionNumber = 1,
                 CreatedBy = _actor.Id,
-                FieldValues = request.FieldsInput.Select(input =>
-                {
-                    var def = defsById[input.FieldDefinitionId];
 
-                    var fv = new DocumentTypeFieldValue
-                    {
-                        FieldDefinitionId = def.Id,
-                        
-                    };
+                // TODO: privremeno dok ne implementiraš upload/presigned flow
+                ContentType = "ContentType",
+                FileName = "dummy",
+                FileSizeBytes = 1,
+                IsCurrent = true,
+                ChangeNote = "initial insert",
+                StorageKey = "Za sada nista",
 
-                    //ApplyTypedValue(def.DataType, input.Value, fv);
-                    return fv;
-                }).ToList()
+                FieldValues = new List<DocumentTypeFieldValue>()
             };
+
+            // 5) Type check + mapping u EAV kolone
+            foreach (var input in request.FieldsInput)
+            {
+                // sigurno postoji jer smo gore validirali, ali ostavimo defensive
+                if (!defsById.TryGetValue(input.FieldDefinitionId, out var def))
+                    continue;
+
+                // Optional + empty => skip (ne upisujemo red)
+                if (!def.IsRequired && IsEmptyJson(input.Value))
+                    continue;
+
+                var fv = new DocumentTypeFieldValue
+                {
+                    FieldDefinitionId = def.Id
+                };
+
+                if (!_fieldValueMapper.TryApply(def.DataType, input.Value, fv, out var errorMessage))
+                {
+                    errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), errorMessage));
+                    continue;
+                }
+
+                version.FieldValues.Add(fv);
+            }
+
+            if (errors.Count > 0)
+                throw new RequestDataValidationException(errors);
 
             var doc = new Domain.Entities.Document
             {
+                Id = request.Id,
                 DocumentTypeId = request.DocumentTypeId,
-                Title = request.Title.Trim(),
+                Title = (request.Title ?? string.Empty).Trim(),
                 CreatedBy = _actor.Id,
                 DocumentVersions = new List<DocumentVersion> { version }
             };
 
-
             _context.Documents.Add(doc);
             await _context.SaveChangesAsync(ct);
+        }
 
+        private static bool IsEmptyJson(JsonElement el)
+        {
+            if (el.ValueKind is JsonValueKind.Null or JsonValueKind.Undefined)
+                return true;
+
+            if (el.ValueKind == JsonValueKind.String && string.IsNullOrWhiteSpace(el.GetString()))
+                return true;
+
+            return false;
         }
     }
 }

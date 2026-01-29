@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Exceptions
 {
@@ -10,10 +8,22 @@ namespace Application.Exceptions
     {
         public IReadOnlyList<ValidationError> Errors { get; }
 
+        public RequestDataValidationException()
+            : this(Enumerable.Empty<ValidationError>())
+        {
+        }
+
         public RequestDataValidationException(IEnumerable<ValidationError> errors)
             : base("Request data validation failed.")
         {
-            Errors = (errors ?? Enumerable.Empty<ValidationError>()).ToList().AsReadOnly();
+            Errors = (errors ?? Enumerable.Empty<ValidationError>())
+                .ToList()
+                .AsReadOnly();
+        }
+
+        public RequestDataValidationException(string property, string message)
+            : this(new[] { new ValidationError(property, message) })
+        {
         }
     }
 
@@ -29,4 +39,3 @@ namespace Application.Exceptions
         public string Message { get; }
     }
 }
-
