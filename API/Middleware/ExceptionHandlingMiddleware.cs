@@ -83,6 +83,16 @@ namespace API.Middleware
                     Data = null
                 });
             }
+            catch(ConflictException ex)
+            {
+                context.Response.StatusCode = 409;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
             catch (System.Exception ex)
             {
                 Guid errorId = Guid.NewGuid();

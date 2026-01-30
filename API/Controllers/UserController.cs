@@ -58,6 +58,24 @@ namespace API.Controllers
             });
         }
 
+        [HttpPut("{id}/edit")]
+        public async Task<IActionResult> UpdateUserProfile(
+            [FromServices]IUpdateUserProfileCommand command,
+            [FromBody] UpdateUserProfileRequest request,
+            [FromRoute] int id,
+            CancellationToken ct)
+        {
+
+            request.UserId = id;
+            await _commandHandler.HandleAsync(command, request, ct);
+
+            return Ok(new SuccessResponse
+            {
+                Data = null,
+                Message = "Successfully updated user informations!"
+            });
+        }
+
       
     }
 }

@@ -17,6 +17,7 @@ namespace Application.PermissionHandling
         public const string DocumentTypesRead = "documentType.read";
 
         public const string UsersRead = "users.read";
+        public const string UsersUpdate = "users.update";
 
         public const string GroupsRead = "groups.read";
     }

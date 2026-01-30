@@ -166,6 +166,7 @@ builder.Services.AddScoped<ICommandResolver, CommandResolver>();
 builder.Services.AddTransient<ICreateUserCommand, EFCreateUserCommand>();
 builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCommand>();
 builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>();
+builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileCommand>();
 
 //End of command services
 
