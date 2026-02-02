@@ -26,6 +26,7 @@ using Implementation.UseCaseHandling.CQResolver;
 using Implementation.UseCases.EntityFramework.Commands.Document;
 using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.User;
+using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -179,6 +180,7 @@ builder.Services.AddScoped<IQueryResolver, QueryResolver>();
 
 builder.Services.AddTransient<IGetMeQuery, EFGetMeQuery>();
 builder.Services.AddTransient<IGetUserByIdQuery, EFGetUserByIdQuery>();
+builder.Services.AddTransient<IGetDocumentTypeByIdQuery, EFGetDocumentTypeByIdQuery>();
 
 //END OF QUERY SERVICES
 

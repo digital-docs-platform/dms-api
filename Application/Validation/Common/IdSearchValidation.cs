@@ -16,7 +16,7 @@ namespace Application.Validation.Common
                 .NotEmpty()
                 .WithMessage("Identifier need to be provided")
                 .GreaterThan(0)
-                .WithMessage("Identifier must be greater than 0!");
+                .WithMessage("Must provide valid identifier!");
         }
     }
 }

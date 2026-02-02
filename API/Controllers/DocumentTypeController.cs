@@ -3,6 +3,8 @@ using API.DTO.Response;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.DocumentType;
+using Application.UseCases.Queries;
+using Application.UseCases.Queries.Search;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +17,29 @@ namespace API.Controllers
     public class DocumentTypeController : ControllerBase
     {
         private readonly ICommandHandler _commandHandler;
+        private readonly IQueryHandler _queryHandler;
         private readonly IMapper _mapper;
-        public DocumentTypeController(ICommandHandler commandHandler, IMapper mapper) 
+        public DocumentTypeController(ICommandHandler commandHandler, IQueryHandler queryHandler,IMapper mapper) 
         {
             _commandHandler = commandHandler;
+            _queryHandler = queryHandler;
             _mapper = mapper;
+        }
+
+        [HttpGet("{DocumentTypeId}")]
+        public async Task<IActionResult> GetDoucmentTypeById(
+            [FromRoute] DocumentTypeIdSearch search,
+            [FromServices] IGetDocumentTypeByIdQuery query,
+            CancellationToken ct) 
+        
+        {
+            var response = await _queryHandler.HandleAsync(query, search, ct);
+
+            return Ok( new SuccessResponse
+            {
+                Data = response,
+                Message = "Successfully found document type information!"
+            });
         }
 
 
