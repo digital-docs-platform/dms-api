@@ -58,5 +58,24 @@ namespace API.Controllers
             });
         }
 
+        [HttpPost("{documentTypeId:int}/documents/search")]
+        public async Task<IActionResult> GetDocumentsByDocumentType(
+            int documentTypeId,
+            [FromBody] GetDocumentsByDocumentTypeIdSearch search,
+            [FromServices] IGetDocumentsByDocumentTypeIdQuery query,
+            CancellationToken ct)
+        {
+
+            search.DocumentTypeId = documentTypeId;
+            var result = await _queryHandler.HandleAsync(query, search, ct);
+
+
+            return Ok(new SuccessResponse
+            {
+                Data = result,
+                Message = "Successfully getted documents for document type . . ."
+            });
+        }
+
     }
 }

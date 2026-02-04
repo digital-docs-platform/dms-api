@@ -19,6 +19,8 @@ using FluentValidation;
 using Implementation.jwt;
 using Implementation.PermissionHandling;
 using Implementation.PermissionHandling.Resolver;
+using Implementation.Querying.DocumentTypeFieldQuerying;
+using Implementation.Querying.DocumentTypeFieldQuerying.Strategies;
 using Implementation.Security.Cryptography;
 using Implementation.Seeding;
 using Implementation.UseCaseHandling;
@@ -26,6 +28,7 @@ using Implementation.UseCaseHandling.CQResolver;
 using Implementation.UseCases.EntityFramework.Commands.Document;
 using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.User;
+using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
@@ -178,9 +181,18 @@ builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileComm
 builder.Services.AddScoped<IQueryHandler, QueryHandler>();
 builder.Services.AddScoped<IQueryResolver, QueryResolver>();
 
+builder.Services.AddScoped<IFieldQueryDispatcher, FieldQueryDispatcher>();
+builder.Services.AddScoped<IFieldQueryStrategy, TextFieldQueryStrategy>();
+builder.Services.AddScoped<IFieldQueryStrategy, DecimalFieldQueryStrategy>();
+builder.Services.AddScoped<IFieldQueryStrategy, NumberFieldQueryStrategy>();
+builder.Services.AddScoped<IFieldQueryStrategy, DateFieldQueryStrategy>();
+
+
+
 builder.Services.AddTransient<IGetMeQuery, EFGetMeQuery>();
 builder.Services.AddTransient<IGetUserByIdQuery, EFGetUserByIdQuery>();
 builder.Services.AddTransient<IGetDocumentTypeByIdQuery, EFGetDocumentTypeByIdQuery>();
+builder.Services.AddTransient<IGetDocumentsByDocumentTypeIdQuery, EFGetDocumentsByDocumentTypeIdQuery>();
 
 //END OF QUERY SERVICES
 

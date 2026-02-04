@@ -3,6 +3,8 @@ using API.DTO.Response;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Document;
+using Application.UseCases.Queries;
+using Application.UseCases.Queries.Search;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +18,12 @@ namespace API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ICommandHandler _commandHandler;
-        public DocumentController(IMapper mapper, ICommandHandler commandHandler)
+        private readonly IQueryHandler _queryHandler;
+        public DocumentController(IMapper mapper, ICommandHandler commandHandler, IQueryHandler queryHandler)
         {
             _mapper = mapper;
             _commandHandler = commandHandler;
+            _queryHandler = queryHandler;
         }
         // POST api/<DocumentController>
         [HttpPost]
