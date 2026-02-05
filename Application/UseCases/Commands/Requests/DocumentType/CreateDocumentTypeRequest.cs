@@ -12,6 +12,7 @@ namespace Application.UseCases.Commands.Requests.DocumentType
         public string Name { get; set; }
         public string Description { get; set; }
         public IReadOnlyCollection<CreateDocumentTypeFieldRequest> Fields { get; set; } = new List<CreateDocumentTypeFieldRequest>();
+
     }
 
     public sealed class CreateDocumentTypeFieldRequest
@@ -26,5 +27,12 @@ namespace Application.UseCases.Commands.Requests.DocumentType
         public bool IsRequired { get; set; }
         public bool IsSearchable { get; set; }
         public bool IsSortable { get; set; }
+        public List<CreateDocumentTypeFieldOptionRequest>? Options { get; set; }
+    }
+
+    public sealed class CreateDocumentTypeFieldOptionRequest
+    {
+        public string Label { get; set; } = string.Empty;
+        public int SortOrder { get; set; }
     }
 }

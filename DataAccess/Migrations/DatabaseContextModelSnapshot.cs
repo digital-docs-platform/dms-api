@@ -170,6 +170,52 @@ namespace DataAccess.Migrations
                     b.ToTable("DocumentTypeFieldDefinitions", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.DocumentTypeFieldOption", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FieldDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("FieldDefinitionId", "Value")
+                        .IsUnique();
+
+                    b.ToTable("DocumentTypeFieldOptions");
+                });
+
             modelBuilder.Entity("Domain.Entities.DocumentTypeFieldValue", b =>
                 {
                     b.Property<int>("Id")
@@ -187,9 +233,6 @@ namespace DataAccess.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("ValueBool")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("ValueDate")
                         .HasColumnType("datetime2");
 
@@ -198,6 +241,9 @@ namespace DataAccess.Migrations
                         .HasColumnType("decimal(18,4)");
 
                     b.Property<int?>("ValueInt")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ValueOptionId")
                         .HasColumnType("int");
 
                     b.Property<string>("ValueString")
@@ -211,12 +257,14 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FieldDefinitionId");
 
+                    b.HasIndex("ValueOptionId");
+
                     b.HasIndex("VersionId", "FieldDefinitionId")
                         .IsUnique();
 
                     b.ToTable("DocumentTypeFieldValues", null, t =>
                         {
-                            t.HasCheckConstraint("CK_DocumentTypeFieldValues_ExactlyOneValue", "(\r\n                    (CASE WHEN [ValueString]  IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueInt]     IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueDecimal] IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueDate]    IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueBool]    IS NULL THEN 0 ELSE 1 END)\r\n                  ) = 1");
+                            t.HasCheckConstraint("CK_DocumentTypeFieldValues_ExactlyOneValue", "(\r\n                        (CASE WHEN [ValueString]   IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueInt]      IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueDecimal]  IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueDate]     IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueOptionId] IS NULL THEN 0 ELSE 1 END)\r\n                      ) = 1");
                         });
                 });
 
@@ -645,6 +693,17 @@ namespace DataAccess.Migrations
                     b.Navigation("DocumentType");
                 });
 
+            modelBuilder.Entity("Domain.Entities.DocumentTypeFieldOption", b =>
+                {
+                    b.HasOne("Domain.Entities.DocumentTypeFieldDefinition", "FieldDefinition")
+                        .WithMany("Options")
+                        .HasForeignKey("FieldDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FieldDefinition");
+                });
+
             modelBuilder.Entity("Domain.Entities.DocumentTypeFieldValue", b =>
                 {
                     b.HasOne("Domain.Entities.DocumentTypeFieldDefinition", "FieldDefinition")
@@ -653,6 +712,11 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.DocumentTypeFieldOption", "ValueOption")
+                        .WithMany()
+                        .HasForeignKey("ValueOptionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Entities.DocumentVersion", "Version")
                         .WithMany("FieldValues")
                         .HasForeignKey("VersionId")
@@ -660,6 +724,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("FieldDefinition");
+
+                    b.Navigation("ValueOption");
 
                     b.Navigation("Version");
                 });
@@ -744,6 +810,11 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Entities.DocumentType", b =>
                 {
                     b.Navigation("FieldDefinitions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.DocumentTypeFieldDefinition", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("Domain.Entities.DocumentVersion", b =>

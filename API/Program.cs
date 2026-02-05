@@ -21,6 +21,7 @@ using Implementation.PermissionHandling;
 using Implementation.PermissionHandling.Resolver;
 using Implementation.Querying.DocumentTypeFieldQuerying;
 using Implementation.Querying.DocumentTypeFieldQuerying.Strategies;
+using Implementation.Querying.FieldQuerying.Strategies;
 using Implementation.Security.Cryptography;
 using Implementation.Seeding;
 using Implementation.UseCaseHandling;
@@ -186,6 +187,7 @@ builder.Services.AddScoped<IFieldQueryStrategy, TextFieldQueryStrategy>();
 builder.Services.AddScoped<IFieldQueryStrategy, DecimalFieldQueryStrategy>();
 builder.Services.AddScoped<IFieldQueryStrategy, NumberFieldQueryStrategy>();
 builder.Services.AddScoped<IFieldQueryStrategy, DateFieldQueryStrategy>();
+builder.Services.AddScoped<IFieldQueryStrategy, SelectFieldQueryStrategy>();
 
 
 

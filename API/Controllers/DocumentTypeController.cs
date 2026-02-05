@@ -45,10 +45,9 @@ namespace API.Controllers
 
         // POST api/<DocumentTypeController>
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] CreateDocumentTypeDto reqDto, [FromServices] ICreateDocumentTypeCommand command , CancellationToken ct)
+        public async Task<IActionResult> Create([FromBody] CreateDocumentTypeRequest request, [FromServices] ICreateDocumentTypeCommand command , CancellationToken ct)
         {
 
-            CreateDocumentTypeRequest request = _mapper.Map<CreateDocumentTypeRequest>(reqDto);
             await _commandHandler.HandleAsync(command, request, ct);
 
             return Ok( new SuccessResponse

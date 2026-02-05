@@ -127,7 +127,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
                         FieldDataType.Number => fv.ValueInt,
                         FieldDataType.Decimal => fv.ValueDecimal,
                         FieldDataType.Date => fv.ValueDate,
-                        FieldDataType.Boolean => fv.ValueBool,
+                        FieldDataType.Select => fv.ValueOptionId,
                         _ => fv.ValueString
                     };
                 }

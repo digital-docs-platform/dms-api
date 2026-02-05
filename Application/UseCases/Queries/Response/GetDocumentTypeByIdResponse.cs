@@ -50,5 +50,19 @@ namespace Application.UseCases.Queries.Response
         // soft-delete (ako želiš da prikazuješ “archived” polja)
         public bool IsDeleted { get; set; }
         public DateTime? DeletedAt { get; set; }
+
+        public List<GetDocumentTypeFieldOptionResponse> Options { get; set; } = new();
+    }
+
+
+    public class GetDocumentTypeFieldOptionResponse
+    {
+        public int Id { get; set; }
+        public int FieldDefinitionId { get; set; }
+
+        public string Value { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+        public int SortOrder { get; set; }
+
     }
 }

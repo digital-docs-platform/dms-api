@@ -36,9 +36,9 @@ namespace DataAccess.Configurations
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueInt });
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueDecimal });
             //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueDate });
-            //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueBool });
+            //builder.HasIndex(x => new { x.FieldDefinitionId, x.ValueOptionId });
 
-          
+
             builder.HasOne(x => x.FieldDefinition)
                    .WithMany() 
                    .HasForeignKey(x => x.FieldDefinitionId)
@@ -49,17 +49,22 @@ namespace DataAccess.Configurations
                    .HasForeignKey(x => x.VersionId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(x => x.ValueOption)
+                   .WithMany()
+                   .HasForeignKey(x => x.ValueOptionId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
             // CHECK constraint: mora biti popunjeno TAČNO JEDNO od Value* polja
             builder.ToTable(t => t.HasCheckConstraint(
-                "CK_DocumentTypeFieldValues_ExactlyOneValue",
-                @"(
-                    (CASE WHEN [ValueString]  IS NULL THEN 0 ELSE 1 END) +
-                    (CASE WHEN [ValueInt]     IS NULL THEN 0 ELSE 1 END) +
-                    (CASE WHEN [ValueDecimal] IS NULL THEN 0 ELSE 1 END) +
-                    (CASE WHEN [ValueDate]    IS NULL THEN 0 ELSE 1 END) +
-                    (CASE WHEN [ValueBool]    IS NULL THEN 0 ELSE 1 END)
-                  ) = 1"
-            ));
+                    "CK_DocumentTypeFieldValues_ExactlyOneValue",
+                    @"(
+                        (CASE WHEN [ValueString]   IS NULL THEN 0 ELSE 1 END) +
+                        (CASE WHEN [ValueInt]      IS NULL THEN 0 ELSE 1 END) +
+                        (CASE WHEN [ValueDecimal]  IS NULL THEN 0 ELSE 1 END) +
+                        (CASE WHEN [ValueDate]     IS NULL THEN 0 ELSE 1 END) +
+                        (CASE WHEN [ValueOptionId] IS NULL THEN 0 ELSE 1 END)
+                      ) = 1"
+                ));
         }
     }
 }

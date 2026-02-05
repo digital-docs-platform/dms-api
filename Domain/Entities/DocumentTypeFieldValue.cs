@@ -19,7 +19,10 @@ namespace Domain.Entities
         public int? ValueInt { get; set; }
         public decimal? ValueDecimal { get; set; }
         public DateTime? ValueDate { get; set; }
-        public bool? ValueBool { get; set; }
+
+        public int? ValueOptionId { get; set; }
+        public DocumentTypeFieldOption? ValueOption { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

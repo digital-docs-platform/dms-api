@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -264,6 +264,32 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DocumentTypeFieldOptions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FieldDefinitionId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Label = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocumentTypeFieldOptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DocumentTypeFieldOptions_DocumentTypeFieldDefinitions_FieldDefinitionId",
+                        column: x => x.FieldDefinitionId,
+                        principalTable: "DocumentTypeFieldDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DocumentTypeFieldValues",
                 columns: table => new
                 {
@@ -275,18 +301,24 @@ namespace DataAccess.Migrations
                     ValueInt = table.Column<int>(type: "int", nullable: true),
                     ValueDecimal = table.Column<decimal>(type: "decimal(18,4)", precision: 18, scale: 4, nullable: true),
                     ValueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ValueBool = table.Column<bool>(type: "bit", nullable: true),
+                    ValueOptionId = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DocumentTypeFieldValues", x => x.Id);
-                    table.CheckConstraint("CK_DocumentTypeFieldValues_ExactlyOneValue", "(\r\n                    (CASE WHEN [ValueString]  IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueInt]     IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueDecimal] IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueDate]    IS NULL THEN 0 ELSE 1 END) +\r\n                    (CASE WHEN [ValueBool]    IS NULL THEN 0 ELSE 1 END)\r\n                  ) = 1");
+                    table.CheckConstraint("CK_DocumentTypeFieldValues_ExactlyOneValue", "(\r\n                        (CASE WHEN [ValueString]   IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueInt]      IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueDecimal]  IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueDate]     IS NULL THEN 0 ELSE 1 END) +\r\n                        (CASE WHEN [ValueOptionId] IS NULL THEN 0 ELSE 1 END)\r\n                      ) = 1");
                     table.ForeignKey(
                         name: "FK_DocumentTypeFieldValues_DocumentTypeFieldDefinitions_FieldDefinitionId",
                         column: x => x.FieldDefinitionId,
                         principalTable: "DocumentTypeFieldDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DocumentTypeFieldValues_DocumentTypeFieldOptions_ValueOptionId",
+                        column: x => x.ValueOptionId,
+                        principalTable: "DocumentTypeFieldOptions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -334,9 +366,25 @@ namespace DataAccess.Migrations
                 column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DocumentTypeFieldOptions_FieldDefinitionId_Value",
+                table: "DocumentTypeFieldOptions",
+                columns: new[] { "FieldDefinitionId", "Value" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentTypeFieldOptions_IsDeleted",
+                table: "DocumentTypeFieldOptions",
+                column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypeFieldValues_FieldDefinitionId",
                 table: "DocumentTypeFieldValues",
                 column: "FieldDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentTypeFieldValues_ValueOptionId",
+                table: "DocumentTypeFieldValues",
+                column: "ValueOptionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTypeFieldValues_VersionId_FieldDefinitionId",
@@ -462,7 +510,7 @@ namespace DataAccess.Migrations
                 name: "UserPermissionGrants");
 
             migrationBuilder.DropTable(
-                name: "DocumentTypeFieldDefinitions");
+                name: "DocumentTypeFieldOptions");
 
             migrationBuilder.DropTable(
                 name: "DocumentVersions");
@@ -477,10 +525,13 @@ namespace DataAccess.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "DocumentTypes");
+                name: "DocumentTypeFieldDefinitions");
 
             migrationBuilder.DropTable(
                 name: "Documents");
+
+            migrationBuilder.DropTable(
+                name: "DocumentTypes");
         }
     }
 }

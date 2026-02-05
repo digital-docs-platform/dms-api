@@ -7,12 +7,13 @@ using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Document;
 using DataAccess;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace Implementation.UseCases.EntityFramework.Commands.Document
 {
-    public class EFCreateDocumentCommand : EFUseCase, ICreateDocumentCommand
+    public sealed class EFCreateDocumentCommand : EFUseCase, ICreateDocumentCommand
     {
         public string RequiredPermission => PermissionCodes.DocumentsWrite;
         public PermissionScope Scope => PermissionScope.DocumentType;
@@ -44,7 +45,8 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
             // 2) Učitaj FieldDefinition-ove za taj DocumentType (bez obrisanih).
             // 3) Proveri da li svi poslati FieldDefinitionId stvarno pripadaju tom DocumentType.
             // 4) Proveri required polja po definiciji (da nisu izostavljena ili prazna).
-            // 5) Proveri da li se poslata vrednost može mapirati u tip definisan u bazi (DataType).
+            // 5) SELECT: Proveri da li optionId (value) postoji i pripada FieldDefinition-u.
+            // 6) Proveri da li se poslata vrednost može mapirati u tip definisan u bazi (DataType).
             // =======================
 
             var docTypeExists = await _context.DocumentTypes
@@ -122,6 +124,25 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                 // Optional + empty => skip (ne upisujemo red)
                 if (!def.IsRequired && IsEmptyJson(input.Value))
                     continue;
+
+                // SELECT: DB validacija optionId-a (value = optionId)
+                if (def.DataType == FieldDataType.Select)
+                {
+                    if (input.Value.ValueKind != JsonValueKind.Number || !input.Value.TryGetInt32(out var optionId))
+                    {
+                        errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), "Select field expects optionId (number)."));
+                        continue;
+                    }
+
+                    var optionExists = await _context.DocumentTypeFieldOptions
+                        .AnyAsync(o => o.Id == optionId && o.FieldDefinitionId == def.Id && o.IsDeleted == false, ct);
+
+                    if (!optionExists)
+                    {
+                        errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), "Invalid optionId for this field."));
+                        continue;
+                    }
+                }
 
                 var fv = new DocumentTypeFieldValue
                 {

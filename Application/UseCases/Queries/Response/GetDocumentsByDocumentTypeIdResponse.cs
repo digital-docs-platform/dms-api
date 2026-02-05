@@ -23,4 +23,13 @@ namespace Application.UseCases.Queries.Response
         // Key = FieldDefinition.Code, Value = typed (string/int/decimal/date/bool)
         public Dictionary<string, object?> Fields { get; set; } = new();
     }
+
+
+    public sealed class DocumentTypeFieldOptionDto
+    {
+        public int Id { get; set; }
+        public string Value { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+        public int SortOrder { get; set; }
+    }
 }

@@ -1,16 +1,11 @@
 ﻿using Domain.Entities;
 using Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Application.DocumentFields
 {
-    public class FieldValueMapper : IFieldValueMapper
+    public sealed class FieldValueMapper : IFieldValueMapper
     {
         private delegate bool MapFn(JsonElement value, DocumentTypeFieldValue fv, out string error);
 
@@ -20,8 +15,8 @@ namespace Application.DocumentFields
                 [FieldDataType.Text] = MapText,
                 [FieldDataType.Number] = MapInt,
                 [FieldDataType.Decimal] = MapDecimal,
-                [FieldDataType.Boolean] = MapBool,
-                [FieldDataType.Date] = MapDate
+                [FieldDataType.Date] = MapDate,
+                [FieldDataType.Select] = MapSelect
             };
 
         public bool TryApply(FieldDataType type, JsonElement value, DocumentTypeFieldValue target, out string error)
@@ -46,19 +41,42 @@ namespace Application.DocumentFields
                 return false;
             }
 
+            // IMPORTANT: always clear all columns before setting the new one
+            ClearAll(target);
+
             return fn(value, target, out error);
+        }
+
+        private static void ClearAll(DocumentTypeFieldValue fv)
+        {
+            fv.ValueString = null;
+            fv.ValueInt = null;
+            fv.ValueDecimal = null;
+            fv.ValueDate = null;
+            fv.ValueOptionId = null; // Select FK
+
+            // ValueBool removed from model/db
         }
 
         private static bool MapText(JsonElement value, DocumentTypeFieldValue fv, out string error)
         {
-            error = "";
-            fv.ValueString = value.ValueKind == JsonValueKind.String ? value.GetString() : value.ToString();
+            error = string.Empty;
+
+            if (value.ValueKind == JsonValueKind.String)
+            {
+                fv.ValueString = value.GetString();
+                return true;
+            }
+
+            // fallback for non-string: store as string representation
+            fv.ValueString = value.ToString();
             return true;
         }
 
         private static bool MapInt(JsonElement value, DocumentTypeFieldValue fv, out string error)
         {
-            error = "";
+            error = string.Empty;
+
             if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var i))
             {
                 fv.ValueInt = i;
@@ -78,7 +96,8 @@ namespace Application.DocumentFields
 
         private static bool MapDecimal(JsonElement value, DocumentTypeFieldValue fv, out string error)
         {
-            error = "";
+            error = string.Empty;
+
             if (value.ValueKind == JsonValueKind.Number && value.TryGetDecimal(out var d))
             {
                 fv.ValueDecimal = d;
@@ -96,29 +115,10 @@ namespace Application.DocumentFields
             return false;
         }
 
-        private static bool MapBool(JsonElement value, DocumentTypeFieldValue fv, out string error)
-        {
-            error = "";
-            if (value.ValueKind is JsonValueKind.True or JsonValueKind.False)
-            {
-                fv.ValueBool = value.GetBoolean();
-                return true;
-            }
-
-            if (value.ValueKind == JsonValueKind.String &&
-                bool.TryParse(value.GetString(), out var b))
-            {
-                fv.ValueBool = b;
-                return true;
-            }
-
-            error = "Invalid boolean value.";
-            return false;
-        }
-
         private static bool MapDate(JsonElement value, DocumentTypeFieldValue fv, out string error)
         {
-            error = "";
+            error = string.Empty;
+
             if (value.ValueKind == JsonValueKind.String &&
                 DateTime.TryParse(value.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var dt))
             {
@@ -130,6 +130,26 @@ namespace Application.DocumentFields
             return false;
         }
 
+        // Select: value MUST be optionId (int)
+        private static bool MapSelect(JsonElement value, DocumentTypeFieldValue fv, out string error)
+        {
+            error = string.Empty;
 
+            if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var optionId))
+            {
+                fv.ValueOptionId = optionId;
+                return true;
+            }
+
+            if (value.ValueKind == JsonValueKind.String &&
+                int.TryParse(value.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out optionId))
+            {
+                fv.ValueOptionId = optionId;
+                return true;
+            }
+
+            error = "Invalid select value (expected optionId as number).";
+            return false;
+        }
     }
 }

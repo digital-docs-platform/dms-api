@@ -135,5 +135,22 @@ namespace Implementation.Querying.DocumentTypeFieldQuerying
 
             return list;
         }
+
+        public static IReadOnlyList<int> GetIntArray(JsonElement filter, string prop = "values")
+        {
+            if (filter.ValueKind != JsonValueKind.Object) return Array.Empty<int>();
+            if (!filter.TryGetProperty(prop, out var el)) return Array.Empty<int>();
+            if (el.ValueKind != JsonValueKind.Array) return Array.Empty<int>();
+
+            var list = new List<int>();
+
+            foreach (var item in el.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.Number && item.TryGetInt32(out var n))
+                    list.Add(n);
+            }
+
+            return list;
+        }
     }
 }

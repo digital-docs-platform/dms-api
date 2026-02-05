@@ -9,7 +9,8 @@ namespace Domain.Enums
         Number = 2,
         Date = 3,
         Boolean = 4,
-        Decimal = 5
+        Decimal = 5,
+        Select = 6,
     }
 
 
