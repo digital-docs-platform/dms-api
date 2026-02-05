@@ -19,6 +19,26 @@ namespace DataAccess.Configurations
 
             base.Configure(builder);
 
+            builder.Property(x => x.DocumentTypeId)
+                 .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
+                   .IsRequired();
+
+            builder.Property(d => d.Title)
+                 .HasMaxLength(200)
+                 .IsRequired();
+
+            builder.HasOne(d => d.CreatedByUser)
+                   .WithMany() // ili .WithMany(u => u.CreatedDocuments) ako imaš kolekciju
+                   .HasForeignKey(d => d.CreatedBy)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.DocumentVersions)
+                .WithOne(v => v.DocumentInstance) // ovo mora da postoji na DocumentVersion
+                .HasForeignKey(v => v.DocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
         }
     }

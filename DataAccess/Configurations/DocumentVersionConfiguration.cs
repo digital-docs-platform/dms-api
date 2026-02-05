@@ -53,6 +53,12 @@ namespace DataAccess.Configurations
                    .WithOne(x => x.Version)
                    .HasForeignKey(x => x.VersionId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(v => v.CreatedByUser)
+                 .WithMany() // ili .WithMany(u => u.CreatedDocumentVersions)
+                 .HasForeignKey(v => v.CreatedBy)
+                 .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

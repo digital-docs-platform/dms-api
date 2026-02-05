@@ -195,6 +195,7 @@ builder.Services.AddTransient<IGetMeQuery, EFGetMeQuery>();
 builder.Services.AddTransient<IGetUserByIdQuery, EFGetUserByIdQuery>();
 builder.Services.AddTransient<IGetDocumentTypeByIdQuery, EFGetDocumentTypeByIdQuery>();
 builder.Services.AddTransient<IGetDocumentsByDocumentTypeIdQuery, EFGetDocumentsByDocumentTypeIdQuery>();
+builder.Services.AddTransient<IGetDocumentByIdQuery,  EFGetDocumentByIdQuery>();
 
 //END OF QUERY SERVICES
 

@@ -12,6 +12,7 @@ namespace Domain.Entities
         public string Title { get; set; }
         public int DocumentTypeId { get; set; }
         public int CreatedBy { get; set; }
+        public User CreatedByUser { get; set; }
         public ICollection<DocumentVersion> DocumentVersions { get; set; } = new List<DocumentVersion>();
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

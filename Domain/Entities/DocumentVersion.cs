@@ -15,6 +15,7 @@ namespace Domain.Entities
         public string? ChangeNote { get; set; }
         public bool IsCurrent { get; set; }
         public int CreatedBy { get; set; }
+        public User CreatedByUser { get; set; }
 
         // Fajl / sadržaj
         public string FileName { get; set; }

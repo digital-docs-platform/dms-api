@@ -41,5 +41,21 @@ namespace API.Controllers
             });
         }
 
+        [HttpGet("{documentId:guid}")]
+        public async Task<IActionResult> GetDocumentById(
+            [FromRoute] DocumentIdSearch search,
+            [FromServices] IGetDocumentByIdQuery query,
+            CancellationToken ct)
+        {
+
+            var result = await _queryHandler.HandleAsync(query, search, ct);
+
+            return Ok( new SuccessResponse
+            {
+                Data = result,
+                Message = "Successfully found Document."
+            });
+        }
+
     }
 }
