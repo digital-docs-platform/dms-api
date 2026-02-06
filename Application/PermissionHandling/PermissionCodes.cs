@@ -13,6 +13,7 @@ namespace Application.PermissionHandling
         public const string DocumentsRead = "documents.read";
         public const string DocumentsWrite = "documents.write";
         public const string DocumentsDelete = "documents.delete";
+        public const string DocumentVersionsRead = "document.versions.read";
 
         public const string DocumentTypesRead = "documentType.read";
 

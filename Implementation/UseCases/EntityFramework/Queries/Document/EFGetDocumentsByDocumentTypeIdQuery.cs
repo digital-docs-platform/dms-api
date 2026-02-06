@@ -9,6 +9,8 @@ using Domain.Entities;
 using Domain.Enums;
 using Implementation.Querying.DocumentTypeFieldQuerying;
 using Microsoft.EntityFrameworkCore;
+using DocumentVersionEntity = Domain.Entities.DocumentVersion;
+
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using System;
 using System.Collections.Generic;
@@ -60,7 +62,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
                 .ToDictionary(fd => fd.Code, StringComparer.OrdinalIgnoreCase);
 
             // Base query: current versions for this doc type
-            IQueryable<DocumentVersion> query = _context.DocumentVersions
+            IQueryable<DocumentVersionEntity> query = _context.DocumentVersions
                 .AsNoTracking()
                 .Where(v => v.IsCurrent && !v.IsDeleted)
                 .Where(v => v.DocumentInstance.DocumentTypeId == search.DocumentTypeId && !v.DocumentInstance.IsDeleted);

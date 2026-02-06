@@ -31,6 +31,7 @@ using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
+using Implementation.UseCases.EntityFramework.Queries.DocumentVersion;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -173,6 +174,7 @@ builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCo
 builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>();
 builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileCommand>();
 
+
 //End of command services
 
 
@@ -196,6 +198,7 @@ builder.Services.AddTransient<IGetUserByIdQuery, EFGetUserByIdQuery>();
 builder.Services.AddTransient<IGetDocumentTypeByIdQuery, EFGetDocumentTypeByIdQuery>();
 builder.Services.AddTransient<IGetDocumentsByDocumentTypeIdQuery, EFGetDocumentsByDocumentTypeIdQuery>();
 builder.Services.AddTransient<IGetDocumentByIdQuery,  EFGetDocumentByIdQuery>();
+builder.Services.AddTransient<IGetDocumentVersionsByDocumentIdQuery, EFGetDocumentVersionsByDocumentIdQuery>();
 
 //END OF QUERY SERVICES
 
