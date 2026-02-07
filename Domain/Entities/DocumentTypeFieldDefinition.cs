@@ -10,7 +10,7 @@ namespace Domain.Entities
 {
     public class DocumentTypeFieldDefinition : Entity, ISoftDeletable, IAuditable
     {
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
         public DocumentType DocumentType { get; set; }
 
         public string Code { get; set; }

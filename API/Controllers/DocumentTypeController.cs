@@ -26,7 +26,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{DocumentTypeId}")]
+        [HttpGet("{DocumentTypeId:guid}")]
         public async Task<IActionResult> GetDoucmentTypeById(
             [FromRoute] DocumentTypeIdSearch search,
             [FromServices] IGetDocumentTypeByIdQuery query,
@@ -50,16 +50,19 @@ namespace API.Controllers
 
             await _commandHandler.HandleAsync(command, request, ct);
 
-            return Ok( new SuccessResponse
+            return Ok(new SuccessResponse
             {
                 Message = "You have successfully create new Document Type . . .",
-                Data = null
-            });
+                Data = new
+                {
+                    request.DocumentTypeId
+                }
+            }); 
         }
 
-        [HttpPost("{documentTypeId:int}/documents/search")]
+        [HttpPost("{documentTypeId:guid}/documents/search")]
         public async Task<IActionResult> GetDocumentsByDocumentType(
-            int documentTypeId,
+            Guid documentTypeId,
             [FromBody] GetDocumentsByDocumentTypeIdSearch search,
             [FromServices] IGetDocumentsByDocumentTypeIdQuery query,
             CancellationToken ct)
@@ -72,7 +75,7 @@ namespace API.Controllers
             return Ok(new SuccessResponse
             {
                 Data = result,
-                Message = "Successfully getted documents for document type . . ."
+                Message = "Successfully fetched documents for document type . . ."
             });
         }
 

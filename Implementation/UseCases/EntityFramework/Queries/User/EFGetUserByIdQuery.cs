@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Exceptions;
+using Application.Jwt;
 using Application.PermissionHandling;
 using Application.UseCases;
 using Application.UseCases.Queries;
@@ -37,7 +38,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
         public async Task<GetUserByIdResponse> ExecuteAsync(IdSearch search, CancellationToken ct)
         {
 
-            if (_actor is null ||  _actor.Id == 0)
+            if (_actor is UnauthorizedActor)
                 throw new UnauthenticatedException("User is not autheticated!");
 
             var user = await _context.Users.FindAsync(search.Id);

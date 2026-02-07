@@ -27,7 +27,7 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById([FromRoute] IdSearch search, [FromServices] IGetUserByIdQuery query, CancellationToken ct)
         {
             var response = await _queryHandler.HandleAsync(query, search, ct);
@@ -45,24 +45,27 @@ namespace API.Controllers
 
         // POST api/<UserController>
         [HttpPost("new")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto, [FromServices] ICreateUserCommand command, CancellationToken ct)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, [FromServices] ICreateUserCommand command, CancellationToken ct)
         {
-            CreateUserRequest request = _mapper.Map<CreateUserRequest>(dto);
+           
 
             await _commandHandler.HandleAsync(command, request, ct);
 
             return Ok(new SuccessResponse
             {
                 Message = "You have successfully created new user!",
-                Data = null
+                Data = new 
+                {
+                    UserId = request.Id
+                }
             });
         }
 
-        [HttpPut("{id}/edit")]
+        [HttpPut("{id:guid}/edit")]
         public async Task<IActionResult> UpdateUserProfile(
             [FromServices]IUpdateUserProfileCommand command,
             [FromBody] UpdateUserProfileRequest request,
-            [FromRoute] int id,
+            [FromRoute] Guid id,
             CancellationToken ct)
         {
 

@@ -8,6 +8,6 @@ namespace Application.UseCases.Queries.Search
 {
     public sealed class IdSearch
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
     }
 }

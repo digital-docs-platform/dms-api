@@ -11,7 +11,7 @@ namespace Application.Validation.Document
         public CreateDocumentRequestValidator()
         {
             RuleFor(x => x.DocumentTypeId)
-                .GreaterThan(0);
+                .NotEmpty();
 
             RuleFor(x => x.Title)
                 .NotEmpty()

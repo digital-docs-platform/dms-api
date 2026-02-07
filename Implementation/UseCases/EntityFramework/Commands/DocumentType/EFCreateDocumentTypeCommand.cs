@@ -38,10 +38,11 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
 
             var docType = new Domain.Entities.DocumentType
             {
+                Id = request.DocumentTypeId,
                 Name = request.Name.Trim(),
                 Description = request.Description.Trim(),
                 AddedBy = _actor.Id,
-                FieldDefinitions = request.Fields.Select(MapFieldDefinition).ToList()
+                FieldDefinitions = request.FieldDefinitions.Select(MapFieldDefinition).ToList()
             };
 
             await _context.DocumentTypes.AddAsync(docType, ct);
@@ -65,7 +66,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
             // SELECT: options
             if (f.DataType == FieldDataType.Select)
             {
-                var options = f.Options ?? new List<CreateDocumentTypeFieldOptionRequest>();
+                var options = f.SelectOptions ?? new List<CreateDocumentTypeFieldOptionRequest>();
 
                 if (options.Count == 0)
                     throw new RequestDataValidationException(new List<ValidationError>

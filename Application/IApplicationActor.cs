@@ -10,7 +10,7 @@ namespace Application
 {
     public interface IApplicationActor
     {
-        public int Id { get; }
+        public Guid Id { get; }
         public string Email { get; }
         //public IReadOnlySet<UserPermissionsDto> ActorPermissions { get; }
     }

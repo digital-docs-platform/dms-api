@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class DocumentTypeConfiguration : EntityConfiguration<DocumentType, int>
+    public class DocumentTypeConfiguration : EntityConfiguration<DocumentType, Guid>
     {
         public override void Configure(EntityTypeBuilder<DocumentType> builder)
         {

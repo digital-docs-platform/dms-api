@@ -8,7 +8,7 @@ namespace Application.UseCases.Commands.Requests.User
 {
     public class UpdateUserProfileRequest
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public string FirstName { get; init; } = null!;
         public string LastName { get; init; } = null!;
         public string Email { get; init; } = null!;

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations
 {
-    public class GroupConfiguration : EntityConfiguration<Group, int>
+    public class GroupConfiguration : EntityConfiguration<Group, Guid>
     {
         public override void Configure(EntityTypeBuilder<Group> builder)
         {

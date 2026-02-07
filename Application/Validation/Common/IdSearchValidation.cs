@@ -14,9 +14,7 @@ namespace Application.Validation.Common
         {
             RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("Identifier need to be provided")
-                .GreaterThan(0)
-                .WithMessage("Must provide valid identifier!");
+                .WithMessage("Identifier need to be provided");
         }
     }
 }

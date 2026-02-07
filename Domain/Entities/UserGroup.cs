@@ -8,8 +8,8 @@ namespace Domain.Entities
 {
     public class UserGroup
     {
-        public int UserId { get; set; }
-        public int GroupId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid GroupId { get; set; }
 
         public DateTime AddedAtUtc { get; set; } = DateTime.UtcNow;
         public int? AddedByUserId { get; set; }

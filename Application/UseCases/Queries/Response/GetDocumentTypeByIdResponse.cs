@@ -6,7 +6,7 @@ namespace Application.UseCases.Queries.Response
 {
     public class GetDocumentTypeByIdResponse
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         // osnovne info o tipu
         public string Name { get; set; }
@@ -28,7 +28,7 @@ namespace Application.UseCases.Queries.Response
     public class GetDocumentTypeByIdFieldsResponse
     {
         public int Id { get; set; }
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
 
         // bitno za render + validaciju + mapiranje payload-a
         public string Code { get; set; }

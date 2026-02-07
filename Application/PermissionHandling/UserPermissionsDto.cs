@@ -8,6 +8,6 @@ namespace Application.PermissionHandling
 {
     public sealed record UserPermissionsDto(
          string PermissionCode,
-         int? DocumentTypeId
+         Guid? DocumentTypeId
         );
 }

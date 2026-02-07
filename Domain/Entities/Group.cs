@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class Group : Entity, ISoftDeletable, IAuditable, IActivatable
+    public class Group : GuidEntity, ISoftDeletable, IAuditable, IActivatable
     {
         public string Name { get; set; } = null!;
         public string? Description { get; set; }

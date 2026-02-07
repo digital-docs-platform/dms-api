@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    public class DocumentType : Entity, ISoftDeletable, IAuditable
+    public class DocumentType : GuidEntity, ISoftDeletable, IAuditable
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public int AddedBy { get; set; }
+        public Guid AddedBy { get; set; }
         public ICollection<DocumentTypeFieldDefinition> FieldDefinitions { get; set; }
          = new List<DocumentTypeFieldDefinition>();
         public DateTime CreatedAt { get; set; }

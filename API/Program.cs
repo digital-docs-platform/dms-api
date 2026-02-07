@@ -127,7 +127,7 @@ builder.Services.AddScoped<IApplicationActor>(sp =>
         user.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? user.FindFirst("sub")?.Value;
 
-    if (!int.TryParse(idValue, out var userId))
+    if (!Guid.TryParse(idValue, out var userId))
         return new UnauthorizedActor();
 
     var email =

@@ -21,13 +21,13 @@ namespace Application.Validation.DocumentType
                 .MaximumLength(500).WithMessage("Description must be at most 500 characters.")
                 .When(x => !string.IsNullOrWhiteSpace(x.Description));
 
-            RuleFor(x => x.Fields)
+            RuleFor(x => x.FieldDefinitions)
                 .NotNull().WithMessage("Fields collection is required.")
                 .Must(f => f.Count > 0).WithMessage("At least one field must be provided.");
 
-            RuleForEach(x => x.Fields).SetValidator(new CreateDocumentTypeFieldsValidator());
+            RuleForEach(x => x.FieldDefinitions).SetValidator(new CreateDocumentTypeFieldsValidator());
 
-            RuleFor(x => x.Fields)
+            RuleFor(x => x.FieldDefinitions)
                 .Must(fields =>
                 {
                     if (fields is null) return true;
@@ -38,7 +38,7 @@ namespace Application.Validation.DocumentType
                 })
                 .WithMessage("Field labels must be unique.");
 
-               RuleFor(x => x.Fields)
+               RuleFor(x => x.FieldDefinitions)
                 .Custom((fields, context) =>
                 {
                     if (fields is null) return;

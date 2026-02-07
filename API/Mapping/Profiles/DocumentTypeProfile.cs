@@ -9,7 +9,7 @@ namespace API.Mapping.Profiles
         public DocumentTypeProfile() 
         {
             CreateMap<CreateDocumentTypeDto, CreateDocumentTypeRequest>()
-                .ForMember(d => d.Fields, opt => opt.MapFrom(s => s.Fields));
+                .ForMember(d => d.FieldDefinitions, opt => opt.MapFrom(s => s.Fields));
 
             CreateMap<CreateDocumentTypeFieldDto, CreateDocumentTypeFieldRequest>();
         }

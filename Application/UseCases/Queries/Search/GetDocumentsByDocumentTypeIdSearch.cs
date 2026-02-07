@@ -10,7 +10,7 @@ namespace Application.UseCases.Queries.Search
 {
     public sealed class GetDocumentsByDocumentTypeIdSearch : IHasDocumentTypeId
     {
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
 
         public PaginationDto Pagination { get; set; } = new();
         public SortDto? Sort { get; set; }

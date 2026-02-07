@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Configurations
 {
-    public class UserConfiguration : EntityConfiguration<User, int>
+    public class UserConfiguration : EntityConfiguration<User, Guid>
     {
         public override void Configure(EntityTypeBuilder<User> builder)
         {

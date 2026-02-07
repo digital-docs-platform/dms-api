@@ -31,7 +31,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
 
         public async Task<GetMeResponse> ExecuteAsync(EmptySearch search, CancellationToken ct)
         {
-            if (_actor is UnauthorizedActor || _actor.Id <= 0)
+            if (_actor is UnauthorizedActor)
                 throw new UnauthenticatedException("User is not authenticated.");
 
             var user = await _context.Users

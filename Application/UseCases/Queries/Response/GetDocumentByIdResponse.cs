@@ -12,10 +12,10 @@ namespace Application.UseCases.Queries.Response
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
 
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
         public string DocumentTypeName { get; set; } = string.Empty;
 
-        public int CreatedById { get; set; }
+        public Guid CreatedById { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -30,7 +30,7 @@ namespace Application.UseCases.Queries.Response
         // Ako imaš VersionNumber na DocumentVersion, koristi ga.
         public int VersionNumber { get; set; }
 
-        public int CreatedById { get; set; }
+        public Guid CreatedById { get; set; }
         public string CreatedByName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
 

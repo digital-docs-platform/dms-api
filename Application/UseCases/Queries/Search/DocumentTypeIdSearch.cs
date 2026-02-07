@@ -9,6 +9,6 @@ namespace Application.UseCases.Queries.Search
 {
     public class DocumentTypeIdSearch : IHasDocumentTypeId
     {
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
     }
 }

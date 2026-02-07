@@ -9,9 +9,10 @@ namespace Application.UseCases.Commands.Requests.DocumentType
 {
     public sealed class CreateDocumentTypeRequest
     {
+        public Guid DocumentTypeId = Guid.NewGuid();
         public string Name { get; set; }
         public string Description { get; set; }
-        public IReadOnlyCollection<CreateDocumentTypeFieldRequest> Fields { get; set; } = new List<CreateDocumentTypeFieldRequest>();
+        public IReadOnlyCollection<CreateDocumentTypeFieldRequest> FieldDefinitions { get; set; } = new List<CreateDocumentTypeFieldRequest>();
 
     }
 
@@ -27,7 +28,7 @@ namespace Application.UseCases.Commands.Requests.DocumentType
         public bool IsRequired { get; set; }
         public bool IsSearchable { get; set; }
         public bool IsSortable { get; set; }
-        public List<CreateDocumentTypeFieldOptionRequest>? Options { get; set; }
+        public List<CreateDocumentTypeFieldOptionRequest>? SelectOptions { get; set; }
     }
 
     public sealed class CreateDocumentTypeFieldOptionRequest

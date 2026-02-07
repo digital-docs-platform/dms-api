@@ -24,7 +24,7 @@ namespace Application.UseCases.Queries.Response
     public sealed class GetMePermissionsResponse
     {
         public string Code { get; set; } = null!;
-        public int? DocumentTypeId { get; set; }
+        public Guid? DocumentTypeId { get; set; }
     }
 
     public sealed class GetMeUIResponse
@@ -46,7 +46,7 @@ namespace Application.UseCases.Queries.Response
     // shared DTO za { id, name } (i DocumentTypes i Groups)
     public sealed class GetMeLookupItemResponse
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
     }
 }

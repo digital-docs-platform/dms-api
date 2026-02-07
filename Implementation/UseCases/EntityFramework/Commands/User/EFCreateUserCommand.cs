@@ -52,6 +52,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
 
             var user = new Domain.Entities.User
             {
+                Id = request.Id,
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,

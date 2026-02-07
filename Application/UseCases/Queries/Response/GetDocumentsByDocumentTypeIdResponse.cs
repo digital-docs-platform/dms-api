@@ -15,7 +15,7 @@ namespace Application.UseCases.Queries.Response
         public Guid DocumentId { get; set; }
         public string Title { get; set; } = string.Empty;
 
-        public int DocumentTypeId { get; set; }
+        public Guid DocumentTypeId { get; set; }
         public int CurrentVersionNumber { get; set; }
         public DateTime VersionCreatedAt { get; set; }
 

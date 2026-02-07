@@ -16,7 +16,7 @@ namespace Implementation.PermissionHandling.Resolver
         {
             _db = db;
         }
-        public async Task<int> ResolveAsync(object request, CancellationToken ct)
+        public async Task<Guid> ResolveAsync(object request, CancellationToken ct)
         {
             if(request is IHasDocumentTypeId hasType)
                 return hasType.DocumentTypeId;

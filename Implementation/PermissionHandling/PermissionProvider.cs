@@ -19,7 +19,7 @@ namespace Implementation.PermissionHandling
         {
             _db = db;
         }
-        public async Task<ICollection<UserPermissionsDto>> GetUserPermissionsAsync(int uid, CancellationToken ct = default)
+        public async Task<ICollection<UserPermissionsDto>> GetUserPermissionsAsync(Guid uid, CancellationToken ct = default)
         {
             var list = await _db.UserPermissionGrants
                  .Where(x => x.UserId == uid)

@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class GroupPermission
     {
-        public int GroupId { get; set; }
+        public Guid GroupId { get; set; }
         public int PermissionId { get; set; }
 
         public DateTime AddedAtUtc { get; set; } = DateTime.UtcNow;

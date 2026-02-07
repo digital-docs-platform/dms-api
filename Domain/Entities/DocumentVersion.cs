@@ -14,8 +14,8 @@ namespace Domain.Entities
         public int VersionNumber { get; set; }   // 1,2,3...
         public string? ChangeNote { get; set; }
         public bool IsCurrent { get; set; }
-        public int CreatedBy { get; set; }
-        public User CreatedByUser { get; set; }
+        public Guid CreatedBy { get; set; }
+        public User CreatedByUser { get; set; } = default!;
 
         // Fajl / sadržaj
         public string FileName { get; set; }

@@ -33,6 +33,7 @@ namespace Implementation.Seeding
             {
                 admin = new User
                 {
+                    Id = Guid.NewGuid(),
                     FirstName = "Admin",
                     LastName = "Adminovich",
                     Email = email,

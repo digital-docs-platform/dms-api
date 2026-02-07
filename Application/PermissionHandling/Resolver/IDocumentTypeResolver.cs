@@ -8,6 +8,6 @@ namespace Application.PermissionHandling.Resolver
 {
     public interface IDocumentTypeResolver
     {
-        public Task<int> ResolveAsync(object request, CancellationToken ct);
+        public Task<Guid> ResolveAsync(object request, CancellationToken ct);
     }
 }

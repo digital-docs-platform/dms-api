@@ -5,7 +5,7 @@ namespace Application.Jwt
 {
     public class UnauthorizedActor : IApplicationActor
     {
-        public int Id => 0;
+        public Guid Id => default;
 
         public string Email => "";
 

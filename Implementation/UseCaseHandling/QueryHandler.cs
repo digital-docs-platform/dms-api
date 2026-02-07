@@ -39,7 +39,7 @@ namespace Implementation.UseCaseHandling
             {
                 if (protectedUseCase.Scope == PermissionScope.DocumentType)
                 {
-                    int docType = await _documentTypeResolver.ResolveAsync(search, ct);
+                    Guid docType = await _documentTypeResolver.ResolveAsync(search, ct);
                     await _permissionHandler.EnsureAsync(protectedUseCase.RequiredPermission, docType, ct);
                 }
                 else
