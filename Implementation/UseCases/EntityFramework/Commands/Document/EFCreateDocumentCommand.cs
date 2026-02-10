@@ -38,17 +38,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
         {
             var errors = new List<ValidationError>();
 
-            // =======================
-            // DB VALIDACIJE (OBAVEZNE)
-            // =======================
-            // 1) Proveri da li postoji DocumentType za dati DocumentTypeId (i da nije soft-deleted).
-            // 2) Učitaj FieldDefinition-ove za taj DocumentType (bez obrisanih).
-            // 3) Proveri da li svi poslati FieldDefinitionId stvarno pripadaju tom DocumentType.
-            // 4) Proveri required polja po definiciji (da nisu izostavljena ili prazna).
-            // 5) SELECT: Proveri da li optionId (value) postoji i pripada FieldDefinition-u.
-            // 6) Proveri da li se poslata vrednost može mapirati u tip definisan u bazi (DataType).
-            // =======================
-
             var docTypeExists = await _context.DocumentTypes
                 .AnyAsync(dt => dt.Id == request.DocumentTypeId && dt.IsDeleted == false, ct);
 
@@ -64,7 +53,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
 
             var defsById = defs.ToDictionary(d => d.Id);
 
-            // 3) Unknown fieldDefinitionId (ne pripada doc type-u)
             foreach (var input in request.FieldsInput)
             {
                 if (!defsById.ContainsKey(input.FieldDefinitionId))
@@ -76,7 +64,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                 }
             }
 
-            // 4) Missing required fields
             foreach (var def in defs.Where(d => d.IsRequired))
             {
                 var inp = request.FieldsInput.FirstOrDefault(x => x.FieldDefinitionId == def.Id);
@@ -96,14 +83,12 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
             if (errors.Count > 0)
                 throw new RequestDataValidationException(errors);
 
-            // Kreiraj verziju + values
+
             var version = new DocumentVersion
             {
                 Id = Guid.NewGuid(),
                 VersionNumber = 1,
                 CreatedBy = _actor.Id,
-
-                // TODO: privremeno dok ne implementiraš upload/presigned flow
                 ContentType = "ContentType",
                 FileName = "dummy",
                 FileSizeBytes = 1,
@@ -114,18 +99,16 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                 FieldValues = new List<DocumentTypeFieldValue>()
             };
 
-            // 5) Type check + mapping u EAV kolone
+            // Type check + mapping u EAV kolone
             foreach (var input in request.FieldsInput)
             {
-                // sigurno postoji jer smo gore validirali, ali ostavimo defensive
                 if (!defsById.TryGetValue(input.FieldDefinitionId, out var def))
                     continue;
 
-                // Optional + empty => skip (ne upisujemo red)
                 if (!def.IsRequired && IsEmptyJson(input.Value))
                     continue;
 
-                // SELECT: DB validacija optionId-a (value = optionId)
+                // DB validacija optionId-a
                 if (def.DataType == FieldDataType.Select)
                 {
                     if (input.Value.ValueKind != JsonValueKind.Number || !input.Value.TryGetInt32(out var optionId))

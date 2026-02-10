@@ -10,8 +10,8 @@ namespace Application.Validation.Document
     {
         public CreateDocumentRequestValidator()
         {
-            RuleFor(x => x.DocumentTypeId)
-                .NotEmpty();
+            //RuleFor(x => x.DocumentTypeId)
+            //    .NotEmpty();
 
             RuleFor(x => x.Title)
                 .NotEmpty()

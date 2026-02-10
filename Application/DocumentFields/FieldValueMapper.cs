@@ -53,9 +53,8 @@ namespace Application.DocumentFields
             fv.ValueInt = null;
             fv.ValueDecimal = null;
             fv.ValueDate = null;
-            fv.ValueOptionId = null; // Select FK
+            fv.ValueOptionId = null;
 
-            // ValueBool removed from model/db
         }
 
         private static bool MapText(JsonElement value, DocumentTypeFieldValue fv, out string error)

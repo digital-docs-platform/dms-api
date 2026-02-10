@@ -29,15 +29,16 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request, [FromServices] ICreateDocumentCommand command,CancellationToken ct)
         {
+
             await _commandHandler.HandleAsync(command , request, ct);
-
-            
-
 
             return StatusCode(201, new SuccessResponse
             {
                 Message = "Successfully added new Document!",
-                Data = null
+                Data = new
+                {
+                    DocumentId = request.Id
+                }
             });
         }
 
