@@ -93,6 +93,16 @@ namespace API.Middleware
                     Data = null
                 });
             }
+            catch (UnsupportedExportFormatException ex)
+            {
+                context.Response.StatusCode = 400;
+
+                await context.Response.WriteAsJsonAsync(new ErrorResponse
+                {
+                    Message = ex.Message,
+                    Data = null
+                });
+            }
             catch (System.Exception ex)
             {
                 Guid errorId = Guid.NewGuid();

@@ -5,6 +5,7 @@ using Application;
 using Application.DocumentFields;
 using Application.jwt;
 using Application.Jwt;
+using Application.Listings;
 using Application.PermissionHandling;
 using Application.PermissionHandling.Resolver;
 using Application.Security.Cryptography;
@@ -17,6 +18,8 @@ using Application.Validation;
 using DataAccess;
 using FluentValidation;
 using Implementation.jwt;
+using Implementation.Listings;
+using Implementation.Listings.Exporters;
 using Implementation.PermissionHandling;
 using Implementation.PermissionHandling.Resolver;
 using Implementation.Querying.DocumentTypeFieldQuerying;
@@ -32,12 +35,14 @@ using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.DocumentVersion;
+using Implementation.UseCases.EntityFramework.Queries.Listings;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 using System.Security.Claims;
 using System.Text;
 
@@ -162,6 +167,16 @@ builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
 builder.Services.AddScoped<IFieldValueMapper, FieldValueMapper>();
 
+builder.Services.AddScoped<IListingExportDispatcher, ListingExportDispatcher>();
+builder.Services.AddTransient<IListingExporter, PdfListingExporter>();
+builder.Services.AddTransient<IListingExporter, CsvListingExporter>();
+builder.Services.AddTransient<IListingExporter, ExcelListingExporter>();
+
+
+
+QuestPDF.Settings.License = LicenseType.Community;
+
+
 // COMMAND SERVICES
 
 builder.Services.AddScoped<ICommandHandler, CommandHandler>();
@@ -199,6 +214,7 @@ builder.Services.AddTransient<IGetDocumentTypeByIdQuery, EFGetDocumentTypeByIdQu
 builder.Services.AddTransient<IGetDocumentsByDocumentTypeIdQuery, EFGetDocumentsByDocumentTypeIdQuery>();
 builder.Services.AddTransient<IGetDocumentByIdQuery,  EFGetDocumentByIdQuery>();
 builder.Services.AddTransient<IGetDocumentVersionsByDocumentIdQuery, EFGetDocumentVersionsByDocumentIdQuery>();
+builder.Services.AddTransient<IExportDocumentsListingQuery, EFExportDocumentsListingQuery>();
 
 //END OF QUERY SERVICES
 
