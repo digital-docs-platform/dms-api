@@ -6,6 +6,7 @@ using Application.UseCases.Commands.Requests.User;
 using Application.UseCases.DTO.User;
 using DataAccess;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,7 +30,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
 
         public string RequiredPermission => "user.create";
 
-        public PermissionScope Scope => PermissionScope.Global;
+        public PermissionScope Scope => PermissionScope.User;
 
         public async Task ExecuteAsync(CreateUserRequest request, CancellationToken ct)
         {

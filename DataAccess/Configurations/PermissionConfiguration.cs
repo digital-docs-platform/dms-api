@@ -28,8 +28,11 @@ namespace DataAccess.Configurations
                 .IsRequired(false)
                 .HasMaxLength(500);
 
-            
 
+            builder.Property(x => x.Scope)
+                   .IsRequired()
+                   .HasConversion<string>()
+                   .HasMaxLength(300);
 
 
             //Indexes
@@ -37,40 +40,8 @@ namespace DataAccess.Configurations
             builder.HasIndex(p => p.Code).IsUnique();
 
 
-            DateTime seedTime = new DateTime(2026, 01, 10, 0, 0, 0, DateTimeKind.Utc);
-
-            builder.HasData(
-
-              
-
-              // Dokumenti - osnovno
-              new Permission { Id = 1, Code = "documents.read", Name = "Read documents", Description = "View/list documents", CreatedAt = seedTime },
-              new Permission { Id = 2, Code = "documents.write", Name = "Create documents", Description = "Create new document", CreatedAt = seedTime },
-              new Permission { Id = 4, Code = "documents.delete", Name = "Delete documents", Description = "Delete/soft-delete document", CreatedAt = seedTime },
-
-              // Verzije / fajlovi
-              new Permission { Id = 5, Code = "documents.version.add", Name = "Add version", Description = "Add new document version", CreatedAt = seedTime },
-              new Permission { Id = 6, Code = "documents.download", Name = "Download file", Description = "Download document file", CreatedAt = seedTime },
-              new Permission { Id = 7, Code = "documents.upload", Name = "Upload file", Description = "Upload document file", CreatedAt = seedTime },
-
-              // Metapodaci (EAV)
-              new Permission { Id = 8, Code = "documents.metadata.edit", Name = "Edit metadata", Description = "Edit document metadata fields", CreatedAt = seedTime },
-
-              // Tipovi dokumenata i šeme (admin)
-              new Permission { Id = 9, Code = "documentTypes.read", Name = "Read document types", Description = "View document types", CreatedAt = seedTime },
-              new Permission { Id = 10, Code = "documentTypes.manage", Name = "Manage document types", Description = "Create/update document types and fields", CreatedAt = seedTime },
-
-              // Korisnici / permisije (admin)
-              new Permission { Id = 11, Code = "users.read", Name = "Read users", Description = "View users", CreatedAt = seedTime },
-              new Permission { Id = 12, Code = "users.manage", Name = "Manage users", Description = "Create/update/block users", CreatedAt = seedTime },
-              new Permission { Id = 13, Code = "permissions.manage", Name = "Manage permissions", Description = "Grant/revoke permissions", CreatedAt = seedTime },
-
-              // Sistem / platforma (globalno)
-              new Permission { Id = 14, Code = "system.admin", Name = "System admin", Description = "Administrative access within an organization (global)", CreatedAt = seedTime }
-            
-
-
-            );
+          
+           
 
         }
     }

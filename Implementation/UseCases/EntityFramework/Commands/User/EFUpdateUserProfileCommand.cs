@@ -4,6 +4,7 @@ using Application.UseCases;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.User;
 using DataAccess;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
     {
         public string RequiredPermission => PermissionCodes.UsersUpdate;
 
-        public PermissionScope Scope => PermissionScope.Global;
+        public PermissionScope Scope => PermissionScope.User;
 
         public int Id => 6;
 

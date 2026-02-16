@@ -13,19 +13,28 @@ namespace DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<GroupPermission> builder)
         {
+            builder.ToTable("GroupPermissions");
+
             builder.HasKey(gp => new { gp.GroupId, gp.PermissionId });
 
             builder.Property(gp => gp.AddedAtUtc)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasOne<Group>()
-                .WithMany()
-                .HasForeignKey(gp => gp.GroupId);
+            builder.HasOne(gp => gp.Group)
+            .WithMany(g => g.GroupPermissions)
+            .HasForeignKey(gp => gp.GroupId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<Permission>()
-                .WithMany()
-                .HasForeignKey(gp => gp.PermissionId);
+            builder.HasOne(gp => gp.Permission)
+                .WithMany(p => p.PermissionGroups)
+                .HasForeignKey(gp => gp.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(gp => gp.AddedByUser)
+                    .WithMany(u => u.GroupPermissionsAddedByMe)
+                    .HasForeignKey(gp => gp.AddedByUserId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

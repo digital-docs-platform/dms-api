@@ -17,6 +17,7 @@ namespace DataAccess
 
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<PermissionDependency> PermissionDependencies { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Document> Documents { get; set; }

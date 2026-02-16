@@ -25,6 +25,7 @@ namespace Domain.Entities
 
         //public ICollection<UserPermissionGrant> UserPermissions { get; set; } = new List<UserPermissionGrant>();
         //public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
+        public ICollection<GroupPermission> GroupPermissionsAddedByMe { get; set; } = new List<GroupPermission>();
 
 
     }

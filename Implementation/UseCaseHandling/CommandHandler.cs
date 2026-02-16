@@ -1,9 +1,11 @@
-﻿using Application.PermissionHandling;
+﻿using Application.Exceptions;
+using Application.PermissionHandling;
 using Application.PermissionHandling.Resolver;
 using Application.UseCaseHandling;
 using Application.UseCaseHandling.CQReslover;
 using Application.UseCases;
 using Application.Validation;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +39,7 @@ namespace Implementation.UseCaseHandling
             {
                 if (protectedUseCase.Scope == PermissionScope.DocumentType)
                 {
-                    Guid docType = await _documentTypeResolver.ResolveAsync(request, ct);
+                    Guid docType = request != null ? await _documentTypeResolver.ResolveAsync(request, ct) : throw new Exception();
                     await _permissionHandler.EnsureAsync(protectedUseCase.RequiredPermission, docType, ct);
                 }
                 else

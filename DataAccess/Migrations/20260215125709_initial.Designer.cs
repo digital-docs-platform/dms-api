@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260206205239_initial")]
+    [Migration("20260215125709_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -387,14 +387,16 @@ namespace DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int?>("AddedByUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AddedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("GroupId", "PermissionId");
 
+                    b.HasIndex("AddedByUserId");
+
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("GroupPermission");
+                    b.ToTable("GroupPermissions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Permission", b =>
@@ -427,6 +429,11 @@ namespace DataAccess.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -438,124 +445,31 @@ namespace DataAccess.Migrations
                         .IsUnique();
 
                     b.ToTable("Permissions", (string)null);
+                });
 
-                    b.HasData(
-                        new
+            modelBuilder.Entity("Domain.Entities.PermissionDependency", b =>
+                {
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DependsOnPermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("PermissionId", "DependsOnPermissionId");
+
+                    b.HasIndex("DependsOnPermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("PermissionDependencies", null, t =>
                         {
-                            Id = 1,
-                            Code = "documents.read",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View/list documents",
-                            IsActive = false,
-                            Name = "Read documents"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = "documents.write",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create new document",
-                            IsActive = false,
-                            Name = "Create documents"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Code = "documents.delete",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Delete/soft-delete document",
-                            IsActive = false,
-                            Name = "Delete documents"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Code = "documents.version.add",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Add new document version",
-                            IsActive = false,
-                            Name = "Add version"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Code = "documents.download",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Download document file",
-                            IsActive = false,
-                            Name = "Download file"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Code = "documents.upload",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Upload document file",
-                            IsActive = false,
-                            Name = "Upload file"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Code = "documents.metadata.edit",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Edit document metadata fields",
-                            IsActive = false,
-                            Name = "Edit metadata"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Code = "documentTypes.read",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View document types",
-                            IsActive = false,
-                            Name = "Read document types"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Code = "documentTypes.manage",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create/update document types and fields",
-                            IsActive = false,
-                            Name = "Manage document types"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Code = "users.read",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "View users",
-                            IsActive = false,
-                            Name = "Read users"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Code = "users.manage",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Create/update/block users",
-                            IsActive = false,
-                            Name = "Manage users"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Code = "permissions.manage",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Grant/revoke permissions",
-                            IsActive = false,
-                            Name = "Manage permissions"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Code = "system.admin",
-                            CreatedAt = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Administrative access within an organization (global)",
-                            IsActive = false,
-                            Name = "System admin"
+                            t.HasCheckConstraint("CK_PermissionDependencies_NoSelfDependency", "[PermissionId] <> [DependsOnPermissionId]");
                         });
                 });
 
@@ -761,17 +675,47 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.GroupPermission", b =>
                 {
-                    b.HasOne("Domain.Entities.Group", null)
-                        .WithMany()
+                    b.HasOne("Domain.Entities.User", "AddedByUser")
+                        .WithMany("GroupPermissionsAddedByMe")
+                        .HasForeignKey("AddedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Domain.Entities.Group", "Group")
+                        .WithMany("GroupPermissions")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Permission", null)
-                        .WithMany()
+                    b.HasOne("Domain.Entities.Permission", "Permission")
+                        .WithMany("PermissionGroups")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AddedByUser");
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PermissionDependency", b =>
+                {
+                    b.HasOne("Domain.Entities.Permission", "DependsOnPermission")
+                        .WithMany("DependedOnBy")
+                        .HasForeignKey("DependsOnPermissionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Permission", "Permission")
+                        .WithMany("Dependencies")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DependsOnPermission");
+
+                    b.Navigation("Permission");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserGroup", b =>
@@ -800,7 +744,7 @@ namespace DataAccess.Migrations
                         .HasForeignKey("GrantedByUserId");
 
                     b.HasOne("Domain.Entities.Permission", "Permission")
-                        .WithMany()
+                        .WithMany("PermissionUsers")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -838,6 +782,27 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Entities.DocumentVersion", b =>
                 {
                     b.Navigation("FieldValues");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Group", b =>
+                {
+                    b.Navigation("GroupPermissions");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Permission", b =>
+                {
+                    b.Navigation("DependedOnBy");
+
+                    b.Navigation("Dependencies");
+
+                    b.Navigation("PermissionGroups");
+
+                    b.Navigation("PermissionUsers");
+                });
+
+            modelBuilder.Entity("Domain.Entities.User", b =>
+                {
+                    b.Navigation("GroupPermissionsAddedByMe");
                 });
 #pragma warning restore 612, 618
         }

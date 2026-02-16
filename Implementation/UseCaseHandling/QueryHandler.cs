@@ -5,6 +5,8 @@ using Application.UseCaseHandling.CQReslover;
 using Application.UseCases;
 using Application.Validation;
 using Azure.Core;
+using DocumentFormat.OpenXml.Office2016.Excel;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +41,7 @@ namespace Implementation.UseCaseHandling
             {
                 if (protectedUseCase.Scope == PermissionScope.DocumentType)
                 {
-                    Guid docType = await _documentTypeResolver.ResolveAsync(search, ct);
+                    Guid docType = search != null ? await _documentTypeResolver.ResolveAsync(search, ct) : throw new Exception();
                     await _permissionHandler.EnsureAsync(protectedUseCase.RequiredPermission, docType, ct);
                 }
                 else

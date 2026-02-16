@@ -22,5 +22,6 @@ namespace Application.PermissionHandling
         public const string UsersUpdate = "users.update";
 
         public const string GroupsRead = "groups.read";
+        public const string GroupWrite = "groups.write";
     }
 }

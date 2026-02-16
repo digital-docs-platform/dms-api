@@ -5,6 +5,7 @@ using Application.UseCases.Queries;
 using Application.UseCases.Queries.Response;
 using Application.UseCases.Queries.Search;
 using DataAccess;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using System;

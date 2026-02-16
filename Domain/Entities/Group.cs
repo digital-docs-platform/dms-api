@@ -19,6 +19,6 @@ namespace Domain.Entities
 
 
         //ICollection<UserGroup> GroupUsers { get; set; } = new List<UserGroup>();
-        //ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
+        public ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
     }
 }

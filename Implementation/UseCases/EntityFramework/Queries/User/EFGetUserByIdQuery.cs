@@ -7,6 +7,7 @@ using Application.UseCases.Queries;
 using Application.UseCases.Queries.Response;
 using Application.UseCases.Queries.Search;
 using DataAccess;
+using Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
     {
         public string RequiredPermission => PermissionCodes.UsersRead;
 
-        public PermissionScope Scope => PermissionScope.Global;
+        public PermissionScope Scope => PermissionScope.User;
 
         public int Id => 5;
 

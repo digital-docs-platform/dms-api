@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
@@ -58,6 +56,7 @@ namespace DataAccess.Migrations
                     Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Scope = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
@@ -123,25 +122,26 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupPermission",
+                name: "PermissionDependencies",
                 columns: table => new
                 {
-                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PermissionId = table.Column<int>(type: "int", nullable: false),
-                    AddedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
-                    AddedByUserId = table.Column<int>(type: "int", nullable: true)
+                    DependsOnPermissionId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupPermission", x => new { x.GroupId, x.PermissionId });
+                    table.PrimaryKey("PK_PermissionDependencies", x => new { x.PermissionId, x.DependsOnPermissionId });
+                    table.CheckConstraint("CK_PermissionDependencies_NoSelfDependency", "[PermissionId] <> [DependsOnPermissionId]");
                     table.ForeignKey(
-                        name: "FK_GroupPermission_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
+                        name: "FK_PermissionDependencies_Permissions_DependsOnPermissionId",
+                        column: x => x.DependsOnPermissionId,
+                        principalTable: "Permissions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GroupPermission_Permissions_PermissionId",
+                        name: "FK_PermissionDependencies_Permissions_PermissionId",
                         column: x => x.PermissionId,
                         principalTable: "Permissions",
                         principalColumn: "Id",
@@ -170,6 +170,37 @@ namespace DataAccess.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupPermissions",
+                columns: table => new
+                {
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PermissionId = table.Column<int>(type: "int", nullable: false),
+                    AddedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    AddedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupPermissions", x => new { x.GroupId, x.PermissionId });
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_Permissions_PermissionId",
+                        column: x => x.PermissionId,
+                        principalTable: "Permissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_Users_AddedByUserId",
+                        column: x => x.AddedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -338,26 +369,6 @@ namespace DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Permissions",
-                columns: new[] { "Id", "Code", "CreatedAt", "Description", "IsActive", "ModifiedAt", "Name" },
-                values: new object[,]
-                {
-                    { 1, "documents.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View/list documents", false, null, "Read documents" },
-                    { 2, "documents.write", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create new document", false, null, "Create documents" },
-                    { 4, "documents.delete", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Delete/soft-delete document", false, null, "Delete documents" },
-                    { 5, "documents.version.add", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Add new document version", false, null, "Add version" },
-                    { 6, "documents.download", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Download document file", false, null, "Download file" },
-                    { 7, "documents.upload", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Upload document file", false, null, "Upload file" },
-                    { 8, "documents.metadata.edit", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Edit document metadata fields", false, null, "Edit metadata" },
-                    { 9, "documentTypes.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View document types", false, null, "Read document types" },
-                    { 10, "documentTypes.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update document types and fields", false, null, "Manage document types" },
-                    { 11, "users.read", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "View users", false, null, "Read users" },
-                    { 12, "users.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Create/update/block users", false, null, "Manage users" },
-                    { 13, "permissions.manage", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Grant/revoke permissions", false, null, "Manage permissions" },
-                    { 14, "system.admin", new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Utc), "Administrative access within an organization (global)", false, null, "System admin" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_CreatedBy",
                 table: "Documents",
@@ -434,8 +445,13 @@ namespace DataAccess.Migrations
                 column: "IsDeleted");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GroupPermission_PermissionId",
-                table: "GroupPermission",
+                name: "IX_GroupPermissions_AddedByUserId",
+                table: "GroupPermissions",
+                column: "AddedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupPermissions_PermissionId",
+                table: "GroupPermissions",
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
@@ -453,6 +469,16 @@ namespace DataAccess.Migrations
                 table: "Groups",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionDependencies_DependsOnPermissionId",
+                table: "PermissionDependencies",
+                column: "DependsOnPermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PermissionDependencies_PermissionId",
+                table: "PermissionDependencies",
+                column: "PermissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Permissions_Code",
@@ -520,7 +546,10 @@ namespace DataAccess.Migrations
                 name: "DocumentTypeFieldValues");
 
             migrationBuilder.DropTable(
-                name: "GroupPermission");
+                name: "GroupPermissions");
+
+            migrationBuilder.DropTable(
+                name: "PermissionDependencies");
 
             migrationBuilder.DropTable(
                 name: "UserGroups");
