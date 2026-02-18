@@ -12,7 +12,7 @@ namespace Domain.Entities
         public Guid GroupId { get; set; }
 
         public DateTime AddedAtUtc { get; set; } = DateTime.UtcNow;
-        public int? AddedByUserId { get; set; }
+        public Guid? AddedByUserId { get; set; }
 
     }
 }

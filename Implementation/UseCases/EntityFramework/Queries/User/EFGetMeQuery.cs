@@ -48,19 +48,27 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
            
             bool canUsers = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.UsersRead);
             bool canGroups = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.GroupsRead);
-            bool canDocumentTypes = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.DocumentTypesRead);
+            bool canDocumentTypes = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.DocumentTypesRead || p.DocumentTypeId != null);
 
+
+            var allowedDocTypeIds = perms
+                 .Where(p => p.DocumentTypeId.HasValue)
+                 .Select(p => p.DocumentTypeId!.Value)
+                 .Distinct()
+                 .ToList();
 
             var uiDocumentTypes = canDocumentTypes
                 ? await _context.DocumentTypes
                     .AsNoTracking()
+                    .Where(dt => isAdmin || allowedDocTypeIds.Contains(dt.Id))
                     .OrderBy(dt => dt.Name)
                     .Select(dt => new GetMeLookupItemResponse
                     {
                         Id = dt.Id,
                         Name = dt.Name
                     })
-                    .ToListAsync(ct) : new List<GetMeLookupItemResponse>();
+                    .ToListAsync(ct)
+                : new List<GetMeLookupItemResponse>();
 
             var uiUsers = canUsers
                 ? await _context.Users

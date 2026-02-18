@@ -36,6 +36,7 @@ using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.DocumentVersion;
 using Implementation.UseCases.EntityFramework.Queries.Listings;
+using Implementation.UseCases.EntityFramework.Queries.Permission;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -215,6 +216,7 @@ builder.Services.AddTransient<IGetDocumentsByDocumentTypeIdQuery, EFGetDocuments
 builder.Services.AddTransient<IGetDocumentByIdQuery,  EFGetDocumentByIdQuery>();
 builder.Services.AddTransient<IGetDocumentVersionsByDocumentIdQuery, EFGetDocumentVersionsByDocumentIdQuery>();
 builder.Services.AddTransient<IExportDocumentsListingQuery, EFExportDocumentsListingQuery>();
+builder.Services.AddTransient<IGetPermissionsCatalogQuery, EFGetPermissionsCatalogQuery>();
 
 //END OF QUERY SERVICES
 

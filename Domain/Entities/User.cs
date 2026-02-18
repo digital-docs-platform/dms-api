@@ -24,7 +24,7 @@ namespace Domain.Entities
         public DateTime? ModifiedAt { get; set; }
 
         //public ICollection<UserPermissionGrant> UserPermissions { get; set; } = new List<UserPermissionGrant>();
-        //public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
+        public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
         public ICollection<GroupPermission> GroupPermissionsAddedByMe { get; set; } = new List<GroupPermission>();
 
 

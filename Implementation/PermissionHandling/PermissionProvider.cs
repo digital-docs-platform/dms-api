@@ -1,36 +1,36 @@
 ﻿using Application.PermissionHandling;
 using DataAccess;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Implementation.PermissionHandling
 {
     public class PermissionProvider : IPermissionProvider
     {
         private readonly DatabaseContext _db;
-        public PermissionProvider(DatabaseContext db) 
+
+        public PermissionProvider(DatabaseContext db)
         {
             _db = db;
         }
+
         public async Task<ICollection<UserPermissionsDto>> GetUserPermissionsAsync(Guid uid, CancellationToken ct = default)
         {
-            var list = await _db.UserPermissionGrants
-                 .Where(x => x.UserId == uid)
-                 .Select(x => new UserPermissionsDto
-                 (
-                     x.Permission.Code,
-                     x.DocumentTypeId
-                 ))
-                 .ToListAsync(ct);
+            var direct = await _db.UserPermissionGrants
+                .AsNoTracking()
+                .Where(x => x.UserId == uid)
+                .Select(x => new UserPermissionsDto(x.Permission.Code, x.DocumentTypeId))
+                .ToListAsync(ct);
 
-            return list;
+            var fromGroups = await _db.GroupPermissions
+                .AsNoTracking()
+                .Where(gp => gp.Group.GroupUsers.Any(ug => ug.UserId == uid))
+                .Select(gp => new UserPermissionsDto(gp.Permission.Code, gp.DocumentTypeId))
+                .ToListAsync(ct);
+
+            return direct
+                .Concat(fromGroups)
+                .Distinct() // radi jer je record (Code + DocumentTypeId)
+                .ToList();
         }
     }
 }

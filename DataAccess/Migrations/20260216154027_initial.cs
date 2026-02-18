@@ -178,12 +178,18 @@ namespace DataAccess.Migrations
                 {
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PermissionId = table.Column<int>(type: "int", nullable: false),
+                    DocumentTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     AddedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     AddedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GroupPermissions", x => new { x.GroupId, x.PermissionId });
+                    table.ForeignKey(
+                        name: "FK_GroupPermissions_DocumentTypes_DocumentTypeId",
+                        column: x => x.DocumentTypeId,
+                        principalTable: "DocumentTypes",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_GroupPermissions_Groups_GroupId",
                         column: x => x.GroupId,
@@ -210,7 +216,7 @@ namespace DataAccess.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AddedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AddedByUserId = table.Column<int>(type: "int", nullable: true)
+                    AddedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -220,13 +226,13 @@ namespace DataAccess.Migrations
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserGroups_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -448,6 +454,11 @@ namespace DataAccess.Migrations
                 name: "IX_GroupPermissions_AddedByUserId",
                 table: "GroupPermissions",
                 column: "AddedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GroupPermissions_DocumentTypeId",
+                table: "GroupPermissions",
+                column: "DocumentTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupPermissions_PermissionId",

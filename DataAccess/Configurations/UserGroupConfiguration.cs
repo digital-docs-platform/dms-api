@@ -21,14 +21,14 @@ namespace DataAccess.Configurations
             builder.Property(x => x.AddedByUserId).IsRequired(false);
 
             builder.HasOne<User>()
-                .WithMany()
+                .WithMany(u => u.UserGroups)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne<Group>()
-                .WithMany()
+                .WithMany(g => g.GroupUsers)
                 .HasForeignKey(x => x.GroupId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }

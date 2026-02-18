@@ -18,7 +18,7 @@ namespace Domain.Entities
         public DateTime? DeletedAt { get; set; }
 
 
-        //ICollection<UserGroup> GroupUsers { get; set; } = new List<UserGroup>();
+        public ICollection<UserGroup> GroupUsers { get; set; } = new List<UserGroup>();
         public ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
     }
 }

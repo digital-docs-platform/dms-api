@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20260215125709_initial")]
+    [Migration("20260216154027_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -390,9 +390,14 @@ namespace DataAccess.Migrations
                     b.Property<Guid?>("AddedByUserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("DocumentTypeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("GroupId", "PermissionId");
 
                     b.HasIndex("AddedByUserId");
+
+                    b.HasIndex("DocumentTypeId");
 
                     b.HasIndex("PermissionId");
 
@@ -552,8 +557,8 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("AddedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("AddedByUserId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("AddedByUserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserId", "GroupId");
 
@@ -680,6 +685,10 @@ namespace DataAccess.Migrations
                         .HasForeignKey("AddedByUserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("Domain.Entities.DocumentType", "DocumentType")
+                        .WithMany()
+                        .HasForeignKey("DocumentTypeId");
+
                     b.HasOne("Domain.Entities.Group", "Group")
                         .WithMany("GroupPermissions")
                         .HasForeignKey("GroupId")
@@ -693,6 +702,8 @@ namespace DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("AddedByUser");
+
+                    b.Navigation("DocumentType");
 
                     b.Navigation("Group");
 
@@ -721,15 +732,15 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Entities.UserGroup", b =>
                 {
                     b.HasOne("Domain.Entities.Group", null)
-                        .WithMany()
+                        .WithMany("GroupUsers")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.User", null)
-                        .WithMany()
+                        .WithMany("UserGroups")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -787,6 +798,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Entities.Group", b =>
                 {
                     b.Navigation("GroupPermissions");
+
+                    b.Navigation("GroupUsers");
                 });
 
             modelBuilder.Entity("Domain.Entities.Permission", b =>
@@ -803,6 +816,8 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("GroupPermissionsAddedByMe");
+
+                    b.Navigation("UserGroups");
                 });
 #pragma warning restore 612, 618
         }

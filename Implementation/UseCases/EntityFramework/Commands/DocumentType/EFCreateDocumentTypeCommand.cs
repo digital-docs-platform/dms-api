@@ -15,7 +15,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
     public sealed class EFCreateDocumentTypeCommand : EFUseCase, ICreateDocumentTypeCommand
     {
         public string RequiredPermission => PermissionCodes.SystemAdmin;
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.System;
 
         public int Id => 3;
         public string Name => "Create DocumentType";

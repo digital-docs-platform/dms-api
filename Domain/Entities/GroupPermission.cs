@@ -14,6 +14,9 @@ namespace Domain.Entities
         public int PermissionId { get; set; }
         public Permission Permission { get; set; } = null!;
 
+        public Guid? DocumentTypeId { get; set; }  // null => globalno
+        public DocumentType? DocumentType { get; set; }
+
         public DateTime AddedAtUtc { get; set; } = DateTime.UtcNow;
 
         public Guid? AddedByUserId { get; set; }
