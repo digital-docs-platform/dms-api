@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Queries
 {
-    public interface IGetPermissionsCatalogQuery 
-                    : IQuery<EmptySearch, GetPermissionCatalogResponse>,
-                      IProtectedUseCase
+    public interface IGetUserGrantPermissionsQuery : IQuery<IdSearch<Guid>, GetUserPermissionsResponse>, IProtectedUseCase
     {
     }
 }

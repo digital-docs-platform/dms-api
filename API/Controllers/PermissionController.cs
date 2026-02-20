@@ -25,13 +25,12 @@ namespace API.Controllers
 
         // GET: api/<PermissionController>
         //Id == UserId
-        [HttpGet("catalog/{Id:guid}")]
+        [HttpGet("catalog")]
         public async Task<IActionResult> GetPermissionCatalog(
                                         [FromServices] IGetPermissionsCatalogQuery query,
-                                        [FromRoute] IdSearch search,
                                         CancellationToken ct)
         {
-            var result = await _queryHandler.HandleAsync(query, search, ct);
+            var result = await _queryHandler.HandleAsync(query, new EmptySearch(), ct);
 
             return Ok( new SuccessResponse
             {
@@ -45,17 +44,19 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateUserPermissions(
                                          [FromBody] UpdateUserPermissionsRequest request,
                                          [FromServices] IUpdateUserPermissionsCommand command,
-                                         IGetPermissionsCatalogQuery query,
+                                         IGetUserGrantPermissionsQuery query,
                                          CancellationToken ct)
         {
             await _commandHandler.HandleAsync(command, request, ct);
 
-            var permissions = await _queryHandler.HandleAsync(query, new IdSearch { Id = request.UserId }, ct);
+
+            //Ovde ce biti potrebne samo user permisije
+            var userPermissions = await _queryHandler.HandleAsync(query, new IdSearch<Guid>() { Id = request.UserId}, ct);
 
             return Ok(new SuccessResponse
             {
                 Message = "Successfully updated user permissions!",
-                Data = permissions
+                Data = userPermissions
             });
         }
         

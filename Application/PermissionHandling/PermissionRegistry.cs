@@ -19,7 +19,7 @@ namespace Application.PermissionHandling
                 [PermissionCodes.UsersRead] = PermissionScope.User,
                 [PermissionCodes.UsersWrite] = PermissionScope.User,
                 [PermissionCodes.UsersUpdate] = PermissionScope.User,
-                [PermissionCodes.UsersPermissionGrant] = PermissionScope.User,
+
 
                 [PermissionCodes.GroupsRead] = PermissionScope.Group,
                 [PermissionCodes.GroupWrite] = PermissionScope.Group
@@ -37,7 +37,7 @@ namespace Application.PermissionHandling
 
                 [PermissionCodes.UsersWrite] = new[] {PermissionCodes.UsersRead},
                 [PermissionCodes.UsersUpdate] = new[] { PermissionCodes.UsersRead },
-                [PermissionCodes.UsersPermissionGrant] = new[] { PermissionCodes.UsersRead },
+                
 
                 [PermissionCodes.GroupWrite] = new[] { PermissionCodes.GroupsRead }
 

@@ -34,11 +34,11 @@ namespace Implementation.UseCases.EntityFramework.Queries.Permission
             _permissionProvider = permissionProvider;
         }
 
-        public async Task<GetPermissionCatalogResponse> ExecuteAsync(IdSearch search, CancellationToken ct)
+        public async Task<GetPermissionCatalogResponse> ExecuteAsync(EmptySearch search, CancellationToken ct)
         {
 
-            if (!await _context.Users.AnyAsync(u => u.Id == search.Id))
-                throw new EntityNotFoundException("User not found...");
+            //if (!await _context.Users.AnyAsync(u => u.Id == search.Id))
+            //    throw new EntityNotFoundException("User not found...");
 
 
 
@@ -76,10 +76,10 @@ namespace Implementation.UseCases.EntityFramework.Queries.Permission
                 );
 
             // 3) user grants (merge user+group radiš server-side kasnije; za sada user grants)
-            var userPerms = (await _permissionProvider.GetUserPermissionsAsync(search.Id, ct))
-                            .Select(p => new UserGrantedPermissionDto 
-                            { Code = p.PermissionCode, DocumentTypeId = p.DocumentTypeId })
-                            .ToList();
+            //var userPerms = (await _permissionProvider.GetUserPermissionsAsync(search.Id, ct))
+            //                .Select(p => new UserGrantedPermissionDto 
+            //                { Code = p.PermissionCode, DocumentTypeId = p.DocumentTypeId })
+            //                .ToList();
 
             // 4) složi scope grupisano
             var scopeGroups = permissions
@@ -111,7 +111,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Permission
             return new GetPermissionCatalogResponse
             {
                 Scopes = scopeGroups,
-                UserPermissions = userPerms,
+                //UserPermissions = userPerms,
                 DocumentTypes = documentTypes
             };
         }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Queries
 {
-    public interface IGetUserByIdQuery : IQuery<IdSearch, GetUserByIdResponse>, IProtectedUseCase
+    public interface IGetUserByIdQuery : IQuery<IdSearch<Guid>, GetUserByIdResponse>, IProtectedUseCase
     {
     }
 }

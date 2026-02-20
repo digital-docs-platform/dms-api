@@ -36,7 +36,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
             _actor = actor;
         }
 
-        public async Task<GetUserByIdResponse> ExecuteAsync(IdSearch search, CancellationToken ct)
+        public async Task<GetUserByIdResponse> ExecuteAsync(IdSearch<Guid> search, CancellationToken ct)
         {
 
             if (_actor is UnauthorizedActor)

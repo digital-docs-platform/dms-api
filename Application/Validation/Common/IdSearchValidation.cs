@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace Application.Validation.Common
 {
-    public sealed class IdSearchValidation : AbstractValidator<IdSearch>
+    public sealed class IdSearchValidation<TType>
+        : AbstractValidator<IdSearch<TType>>
     {
-        public IdSearchValidation() 
+        public IdSearchValidation()
         {
             RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Identifier need to be provided");
+             .NotEqual(default(TType))
+             .WithMessage("Identifier must be provided");
         }
     }
 }

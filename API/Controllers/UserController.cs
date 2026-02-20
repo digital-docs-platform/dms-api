@@ -20,7 +20,7 @@ namespace API.Controllers
         private readonly IQueryHandler _queryHandler;
         private readonly IMapper _mapper;
 
-        public UserController(ICommandHandler commandHandler, IQueryHandler queryHandler,IMapper mapper)
+        public UserController(ICommandHandler commandHandler, IQueryHandler queryHandler, IMapper mapper)
         {
             _commandHandler = commandHandler;
             _queryHandler = queryHandler;
@@ -28,7 +28,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetUserById([FromRoute] IdSearch search, [FromServices] IGetUserByIdQuery query, CancellationToken ct)
+        public async Task<IActionResult> GetUserById([FromRoute] IdSearch<Guid> search, [FromServices] IGetUserByIdQuery query, CancellationToken ct)
         {
             var response = await _queryHandler.HandleAsync(query, search, ct);
 
@@ -47,14 +47,14 @@ namespace API.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request, [FromServices] ICreateUserCommand command, CancellationToken ct)
         {
-           
+
 
             await _commandHandler.HandleAsync(command, request, ct);
 
             return Ok(new SuccessResponse
             {
                 Message = "You have successfully created new user!",
-                Data = new 
+                Data = new
                 {
                     UserId = request.Id
                 }
@@ -63,7 +63,7 @@ namespace API.Controllers
 
         [HttpPut("{id:guid}/edit")]
         public async Task<IActionResult> UpdateUserProfile(
-            [FromServices]IUpdateUserProfileCommand command,
+            [FromServices] IUpdateUserProfileCommand command,
             [FromBody] UpdateUserProfileRequest request,
             [FromRoute] Guid id,
             CancellationToken ct)
@@ -76,6 +76,22 @@ namespace API.Controllers
             {
                 Data = null,
                 Message = "Successfully updated user informations!"
+            });
+        }
+
+        //api/user/{id}/permissions
+        [HttpGet("{id:guid}/permissions")]
+        public async Task<IActionResult> GetUserGrantPermissions(
+                                         [FromServices] IGetUserGrantPermissionsQuery query,
+                                         [FromRoute] IdSearch<Guid> search,
+                                         CancellationToken ct) 
+        {
+            var result = await _queryHandler.HandleAsync(query, search, ct);
+
+            return Ok(new SuccessResponse
+            {
+                Data = result,
+                Message = "Successfully get user granted permissions" 
             });
         }
 

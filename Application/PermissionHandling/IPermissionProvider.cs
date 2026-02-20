@@ -8,6 +8,16 @@ namespace Application.PermissionHandling
 {
     public interface IPermissionProvider
     {
-        public Task<ICollection<UserPermissionsDto>> GetUserPermissionsAsync(Guid uid, CancellationToken ct = default);
+        public Task<ICollection<UserPermissionsDto>> GetUserPermissionsAsync(
+                                                     Guid uid,
+                                                     CancellationToken ct = default);
+
+        Task<ICollection<UserPermissionsDto>> GetUserPermissionGrantsAsync(
+                                              Guid uid,
+                                              CancellationToken ct = default);
+
+        Task<ICollection<UserPermissionsDto>> GetGroupPermissionGrantsAsync(
+                                              Guid gid,
+                                              CancellationToken ct = default);
     }
 }

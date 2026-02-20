@@ -10,7 +10,7 @@ namespace Application.UseCases.Queries.Response
     public sealed class GetPermissionCatalogResponse
     {
         public List<PermissionScopeGroupDto> Scopes { get; set; } = [];
-        public List<UserGrantedPermissionDto> UserPermissions { get; set; } = [];
+        //public List<UserGrantedPermissionDto> UserPermissions { get; set; } = [];
         public List<DocumentTypesDto> DocumentTypes { get; set; } = [];
     }
 
@@ -31,11 +31,11 @@ namespace Application.UseCases.Queries.Response
         public List<string> DependsOn { get; set; } = new();
     }
 
-    public sealed class UserGrantedPermissionDto
-    {
-        public string Code { get; set; } = null!;
-        public Guid? DocumentTypeId { get; set; }
-    }
+    //public sealed class UserGrantedPermissionDto
+    //{
+    //    public string Code { get; set; } = null!;
+    //    public Guid? DocumentTypeId { get; set; }
+    //}
 
     public sealed class DocumentTypesDto
     {

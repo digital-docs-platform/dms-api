@@ -32,5 +32,28 @@ namespace Implementation.PermissionHandling
                 .Distinct() // radi jer je record (Code + DocumentTypeId)
                 .ToList();
         }
+
+        public async Task<ICollection<UserPermissionsDto>> GetUserPermissionGrantsAsync(Guid uid, CancellationToken ct)
+        {
+            return await _db.UserPermissionGrants
+               .AsNoTracking()
+               .Where(x => x.UserId == uid)
+               .Select(x => new UserPermissionsDto(
+                   x.Permission.Code,
+                   x.DocumentTypeId))
+               .ToListAsync(ct);
+        }
+
+        public async Task<ICollection<UserPermissionsDto>> GetGroupPermissionGrantsAsync(Guid gid, CancellationToken ct)
+        {
+            return await _db.GroupPermissions
+                .AsNoTracking()
+                .Where(gp => gp.GroupId == gid)
+                .Select(gp => new UserPermissionsDto(
+                    gp.Permission.Code,
+                    gp.DocumentTypeId))
+                .ToListAsync(ct);
+        }
+
     }
 }

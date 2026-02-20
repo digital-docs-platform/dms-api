@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Queries.Search
 {
-    public sealed class IdSearch
+    public sealed class IdSearch<TType>
     {
-        public Guid Id { get; set; }
+        public TType Id { get; set; }
     }
 }

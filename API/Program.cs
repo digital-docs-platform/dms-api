@@ -36,6 +36,7 @@ using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.DocumentVersion;
+using Implementation.UseCases.EntityFramework.Queries.Group;
 using Implementation.UseCases.EntityFramework.Queries.Listings;
 using Implementation.UseCases.EntityFramework.Queries.Permission;
 using Implementation.UseCases.EntityFramework.Queries.User;
@@ -219,6 +220,8 @@ builder.Services.AddTransient<IGetDocumentByIdQuery,  EFGetDocumentByIdQuery>();
 builder.Services.AddTransient<IGetDocumentVersionsByDocumentIdQuery, EFGetDocumentVersionsByDocumentIdQuery>();
 builder.Services.AddTransient<IExportDocumentsListingQuery, EFExportDocumentsListingQuery>();
 builder.Services.AddTransient<IGetPermissionsCatalogQuery, EFGetPermissionsCatalogQuery>();
+builder.Services.AddTransient<IGetUserGrantPermissionsQuery, EFGetUserGrantPermissionsQuery>();
+builder.Services.AddTransient<IGetGroupPermissionsQuery, EFGetGroupPermissionsQuery>();
 
 //END OF QUERY SERVICES
 
