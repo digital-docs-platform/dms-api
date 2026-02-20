@@ -31,6 +31,7 @@ using Implementation.UseCaseHandling;
 using Implementation.UseCaseHandling.CQResolver;
 using Implementation.UseCases.EntityFramework.Commands.Document;
 using Implementation.UseCases.EntityFramework.Commands.DocumentType;
+using Implementation.UseCases.EntityFramework.Commands.Permission;
 using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
@@ -189,6 +190,7 @@ builder.Services.AddTransient<ICreateUserCommand, EFCreateUserCommand>();
 builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCommand>();
 builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>();
 builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileCommand>();
+builder.Services.AddTransient<IUpdateUserPermissionsCommand, EFUpdateUserPermissionsCommand>();
 
 
 //End of command services

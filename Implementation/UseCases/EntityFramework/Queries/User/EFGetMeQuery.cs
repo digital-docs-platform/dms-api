@@ -48,7 +48,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.User
            
             bool canUsers = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.UsersRead);
             bool canGroups = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.GroupsRead);
-            bool canDocumentTypes = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.DocumentTypesRead || p.DocumentTypeId != null);
+            bool canDocumentTypes = isAdmin || perms.Any(p => p.PermissionCode == PermissionCodes.DocumentsRead || p.DocumentTypeId != null);
 
 
             var allowedDocTypeIds = perms

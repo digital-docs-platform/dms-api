@@ -31,7 +31,7 @@ namespace Implementation.PermissionHandling
                                && (p.DocumentTypeId == documentTypeId || p.DocumentTypeId is null));
 
             if (!allowed)
-                throw new UnauthorizedException("Access denied.");
+                throw new ForbiddenException("Access denied.");
         }
     }
 }

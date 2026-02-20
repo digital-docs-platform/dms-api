@@ -19,7 +19,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.DocumentVersion
 {
     public sealed class EFGetDocumentVersionsByDocumentIdQuery : EFUseCase, IGetDocumentVersionsByDocumentIdQuery
     {
-        public string RequiredPermission => PermissionCodes.DocumentVersionsRead;
+        public string RequiredPermission => PermissionCodes.DocumentsVersionsRead;
 
         public PermissionScope Scope => PermissionScope.DocumentType;
 

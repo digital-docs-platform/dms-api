@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Application.PermissionHandling;
 using Application.Security.Cryptography;
 using Application.UseCases;
 using Application.UseCases.Commands;
@@ -28,7 +29,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
 
         public string Description => "Create new user command";
 
-        public string RequiredPermission => "user.create";
+        public string RequiredPermission => PermissionCodes.UsersWrite;
 
         public PermissionScope Scope => PermissionScope.User;
 

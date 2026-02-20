@@ -12,13 +12,14 @@ namespace Application.PermissionHandling
                 [PermissionCodes.DocumentsRead] = PermissionScope.Document,
                 [PermissionCodes.DocumentsWrite] = PermissionScope.Document,
                 [PermissionCodes.DocumentsDelete] = PermissionScope.Document,
-                [PermissionCodes.DocumentVersionsRead] = PermissionScope.Document,
-                [PermissionCodes.DocumentExport] = PermissionScope.Document,
-
-                [PermissionCodes.DocumentTypesRead] = PermissionScope.DocumentType,
+                [PermissionCodes.DocumentsVersionsRead] = PermissionScope.Document,
+                [PermissionCodes.DocumentsExport] = PermissionScope.Document,
+                [PermissionCodes.DocumentsDownload] = PermissionScope.Document,
 
                 [PermissionCodes.UsersRead] = PermissionScope.User,
+                [PermissionCodes.UsersWrite] = PermissionScope.User,
                 [PermissionCodes.UsersUpdate] = PermissionScope.User,
+                [PermissionCodes.UsersPermissionGrant] = PermissionScope.User,
 
                 [PermissionCodes.GroupsRead] = PermissionScope.Group,
                 [PermissionCodes.GroupWrite] = PermissionScope.Group
@@ -30,10 +31,13 @@ namespace Application.PermissionHandling
             {
                 [PermissionCodes.DocumentsWrite] = new[] { PermissionCodes.DocumentsRead },
                 [PermissionCodes.DocumentsDelete] = new[] { PermissionCodes.DocumentsRead },
-                [PermissionCodes.DocumentExport] = new[] { PermissionCodes.DocumentsRead },
-                [PermissionCodes.DocumentVersionsRead] = new[] { PermissionCodes.DocumentsRead },
+                [PermissionCodes.DocumentsExport] = new[] { PermissionCodes.DocumentsRead },
+                [PermissionCodes.DocumentsVersionsRead] = new[] { PermissionCodes.DocumentsRead },
+                [PermissionCodes.DocumentsDownload] = new[] {PermissionCodes.DocumentsRead},
 
+                [PermissionCodes.UsersWrite] = new[] {PermissionCodes.UsersRead},
                 [PermissionCodes.UsersUpdate] = new[] { PermissionCodes.UsersRead },
+                [PermissionCodes.UsersPermissionGrant] = new[] { PermissionCodes.UsersRead },
 
                 [PermissionCodes.GroupWrite] = new[] { PermissionCodes.GroupsRead }
 

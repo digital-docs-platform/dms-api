@@ -1,5 +1,7 @@
 ﻿using API.DTO.Response;
 using Application.UseCaseHandling;
+using Application.UseCases.Commands;
+using Application.UseCases.Commands.Requests.Permissions;
 using Application.UseCases.Queries;
 using Application.UseCases.Queries.Search;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +15,16 @@ namespace API.Controllers
     public class PermissionController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
-        public PermissionController(IQueryHandler queryHandler)
+        private readonly ICommandHandler _commandHandler;
+        public PermissionController(IQueryHandler queryHandler, ICommandHandler commandHandler)
         {
             _queryHandler = queryHandler;
+            _commandHandler = commandHandler;
         }
 
 
         // GET: api/<PermissionController>
+        //Id == UserId
         [HttpGet("catalog/{Id:guid}")]
         public async Task<IActionResult> GetPermissionCatalog(
                                         [FromServices] IGetPermissionsCatalogQuery query,
@@ -35,6 +40,25 @@ namespace API.Controllers
             });
         }
 
+
+        [HttpPut("update/user")]
+        public async Task<IActionResult> UpdateUserPermissions(
+                                         [FromBody] UpdateUserPermissionsRequest request,
+                                         [FromServices] IUpdateUserPermissionsCommand command,
+                                         IGetPermissionsCatalogQuery query,
+                                         CancellationToken ct)
+        {
+            await _commandHandler.HandleAsync(command, request, ct);
+
+            var permissions = await _queryHandler.HandleAsync(query, new IdSearch { Id = request.UserId }, ct);
+
+            return Ok(new SuccessResponse
+            {
+                Message = "Successfully updated user permissions!",
+                Data = permissions
+            });
+        }
+        
      
     }
 }
