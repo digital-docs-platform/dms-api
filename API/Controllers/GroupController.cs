@@ -1,5 +1,7 @@
 ﻿using API.DTO.Response;
 using Application.UseCaseHandling;
+using Application.UseCases.Commands;
+using Application.UseCases.Commands.Requests.Group;
 using Application.UseCases.Queries;
 using Application.UseCases.Queries.Search;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +15,11 @@ namespace API.Controllers
     public class GroupController : ControllerBase
     {
         private readonly IQueryHandler _queryHandler;
-        public GroupController(IQueryHandler queryHandler)
+        private readonly ICommandHandler _commandHandler;
+        public GroupController(IQueryHandler queryHandler, ICommandHandler commandHandler)
         {
             _queryHandler = queryHandler;
+            _commandHandler = commandHandler;
         }
 
         [HttpGet("{id:guid}/permissions")]
@@ -30,6 +34,21 @@ namespace API.Controllers
             {
                 Data = result,
                 Message = "Successfully get group permissions"
+            });
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateGroup(
+                                        [FromServices] ICreateGroupCommand command,
+                                        [FromBody] CreateGroupRequest request,
+                                        CancellationToken ct)
+        {
+            await _commandHandler.HandleAsync(command, request, ct);
+
+            return Ok(new SuccessResponse
+            {
+                Data = null,
+                Message = "Successfully created new Group"
             });
         }
 

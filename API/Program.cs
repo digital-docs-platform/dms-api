@@ -13,8 +13,10 @@ using Application.Seeding;
 using Application.UseCaseHandling;
 using Application.UseCaseHandling.CQReslover;
 using Application.UseCases.Commands;
+using Application.UseCases.Commands.Requests.Group;
 using Application.UseCases.Queries;
 using Application.Validation;
+using Application.Validation.Group;
 using DataAccess;
 using FluentValidation;
 using Implementation.jwt;
@@ -31,6 +33,7 @@ using Implementation.UseCaseHandling;
 using Implementation.UseCaseHandling.CQResolver;
 using Implementation.UseCases.EntityFramework.Commands.Document;
 using Implementation.UseCases.EntityFramework.Commands.DocumentType;
+using Implementation.UseCases.EntityFramework.Commands.Group;
 using Implementation.UseCases.EntityFramework.Commands.Permission;
 using Implementation.UseCases.EntityFramework.Commands.User;
 using Implementation.UseCases.EntityFramework.Queries.Document;
@@ -192,7 +195,7 @@ builder.Services.AddTransient<ICreateDocumentTypeCommand, EFCreateDocumentTypeCo
 builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>();
 builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileCommand>();
 builder.Services.AddTransient<IUpdateUserPermissionsCommand, EFUpdateUserPermissionsCommand>();
-
+builder.Services.AddTransient<ICreateGroupCommand, EFCreateGroupCommand>();
 
 //End of command services
 

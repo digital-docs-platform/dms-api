@@ -19,9 +19,7 @@ namespace Application.Validation.Permissions
 
             RuleFor(x => x.Permissions)
               .NotNull()
-              .WithMessage("Permissions payload is required.")
-              .Must(p => p != null && p.Count > 0)
-              .WithMessage("At least one permission must be provided.");
+              .WithMessage("Permissions payload is required.");
 
             RuleForEach(x => x.Permissions)
                 .NotNull()
