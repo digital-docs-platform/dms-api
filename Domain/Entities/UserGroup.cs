@@ -14,5 +14,8 @@ namespace Domain.Entities
         public DateTime AddedAtUtc { get; set; } = DateTime.UtcNow;
         public Guid? AddedByUserId { get; set; }
 
+        public User User { get; set; } = null!;
+        public Group Group { get; set; } = null!;
+
     }
 }

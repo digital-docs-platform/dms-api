@@ -22,6 +22,23 @@ namespace API.Controllers
             _commandHandler = commandHandler;
         }
 
+
+
+        [HttpGet("{Id:guid}")]
+        public async Task<IActionResult> GetGroupById(
+                                        [FromServices] IGetGroupByIdQuery query,
+                                        [FromRoute] IdSearch<Guid> search,
+                                        CancellationToken ct)
+        {
+            var result = await _queryHandler.HandleAsync(query, search, ct);  
+            return Ok(new SuccessResponse
+            {
+                Data = result,
+                Message = "Successfully found group"
+            });
+        }
+
+
         [HttpGet("{id:guid}/permissions")]
         public async Task<IActionResult> GetGroupPermissions(
                                          [FromServices] IGetGroupPermissionsQuery query,

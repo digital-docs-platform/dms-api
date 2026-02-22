@@ -225,6 +225,7 @@ builder.Services.AddTransient<IExportDocumentsListingQuery, EFExportDocumentsLis
 builder.Services.AddTransient<IGetPermissionsCatalogQuery, EFGetPermissionsCatalogQuery>();
 builder.Services.AddTransient<IGetUserGrantPermissionsQuery, EFGetUserGrantPermissionsQuery>();
 builder.Services.AddTransient<IGetGroupPermissionsQuery, EFGetGroupPermissionsQuery>();
+builder.Services.AddTransient<IGetGroupByIdQuery, EFGetGroupByIdQuery>();
 
 //END OF QUERY SERVICES
 
