@@ -30,7 +30,7 @@ namespace API.Controllers
                                         [FromRoute] IdSearch<Guid> search,
                                         CancellationToken ct)
         {
-            var result = await _queryHandler.HandleAsync(query, search, ct);  
+            var result = await _queryHandler.HandleAsync(query, search, ct);
             return Ok(new SuccessResponse
             {
                 Data = result,
@@ -45,7 +45,7 @@ namespace API.Controllers
                                          [FromRoute] IdSearch<Guid> search,
                                          CancellationToken ct)
         {
-            var result = await _queryHandler.HandleAsync(query, search, ct);  
+            var result = await _queryHandler.HandleAsync(query, search, ct);
 
             return Ok(new SuccessResponse
             {
@@ -69,6 +69,20 @@ namespace API.Controllers
             });
         }
 
-        
+        [HttpPost("{GroupId:guid}/add-user/{UserId:guid}")]
+        public async Task<IActionResult> AddUserToGroup(
+                                        [FromServices] IAddUserToGroupCommand command,
+                                        [FromRoute] AddUserToGroupRequest request,
+                                        CancellationToken ct)
+        {
+            await _commandHandler.HandleAsync(command, request, ct);
+            return Ok(new SuccessResponse
+            {
+                Data = null,
+                Message = "Successfully added user to group!"
+            });
+
+        }
     }
 }
+        

@@ -196,6 +196,7 @@ builder.Services.AddTransient<ICreateDocumentCommand, EFCreateDocumentCommand>()
 builder.Services.AddTransient<IUpdateUserProfileCommand, EFUpdateUserProfileCommand>();
 builder.Services.AddTransient<IUpdateUserPermissionsCommand, EFUpdateUserPermissionsCommand>();
 builder.Services.AddTransient<ICreateGroupCommand, EFCreateGroupCommand>();
+builder.Services.AddTransient<IAddUserToGroupCommand, EFAddUserToGroupCommand>();
 
 //End of command services
 

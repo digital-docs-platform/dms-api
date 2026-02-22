@@ -22,7 +22,8 @@ namespace Application.PermissionHandling
 
 
                 [PermissionCodes.GroupsRead] = PermissionScope.Group,
-                [PermissionCodes.GroupWrite] = PermissionScope.Group
+                [PermissionCodes.GroupWrite] = PermissionScope.Group,
+                [PermissionCodes.GroupAddUser] = PermissionScope.Group
             };
 
         // dependencies (Requires)
@@ -39,9 +40,10 @@ namespace Application.PermissionHandling
                 [PermissionCodes.UsersUpdate] = new[] { PermissionCodes.UsersRead },
                 
 
-                [PermissionCodes.GroupWrite] = new[] { PermissionCodes.GroupsRead }
+                [PermissionCodes.GroupWrite] = new[] { PermissionCodes.GroupsRead },
+                [PermissionCodes.GroupAddUser] = new[] { PermissionCodes.GroupsRead }
 
-          
+
             };
 
         public static IReadOnlyList<string> GetAllCodes() =>
