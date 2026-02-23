@@ -23,7 +23,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
     public sealed class EFGetDocumentsByDocumentTypeIdQuery : EFUseCase, IGetDocumentsByDocumentTypeIdQuery
     {
         public string RequiredPermission => PermissionCodes.DocumentsRead;
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.Document;
 
         public int Id => 8;
         public string Name => "Get documents by document type";

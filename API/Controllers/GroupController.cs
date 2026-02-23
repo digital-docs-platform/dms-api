@@ -83,6 +83,31 @@ namespace API.Controllers
             });
 
         }
+
+        [HttpDelete("{GroupId:guid}/remove-user/{UserId:guid}")]
+        public async Task<IActionResult> RemoveUserFromGroup(
+                                        [FromServices] IRemoveUserFromGroupCommand command, IGetGroupByIdQuery query,
+                                        [FromRoute] RemoveUserFromGroupRequest request,
+                                        CancellationToken ct)
+        {
+
+            await _commandHandler.HandleAsync(command, request, ct);
+
+            var groupInfo = await _queryHandler.HandleAsync(query, new IdSearch<Guid> { Id = request.GroupId }, ct);
+
+            return Ok(new SuccessResponse
+            {
+                Data = groupInfo,
+                Message = "Successfully removed user from group!"
+            });
+
+        }
+
+
+
+
+
+
     }
 }
         

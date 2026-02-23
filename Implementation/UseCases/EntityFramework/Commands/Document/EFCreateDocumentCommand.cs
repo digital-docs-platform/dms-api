@@ -16,7 +16,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
     public sealed class EFCreateDocumentCommand : EFUseCase, ICreateDocumentCommand
     {
         public string RequiredPermission => PermissionCodes.DocumentsWrite;
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.Document;
 
         public int Id => 4;
         public string Name => "Create new document";

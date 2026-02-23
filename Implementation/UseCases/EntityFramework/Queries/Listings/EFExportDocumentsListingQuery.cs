@@ -16,7 +16,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Listings
     public sealed class EFExportDocumentsListingQuery : EFUseCase, IExportDocumentsListingQuery
     {
         public string RequiredPermission => PermissionCodes.DocumentsExport;
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.Document;
 
         public int Id => 11;
         public string Name => "Export documents";

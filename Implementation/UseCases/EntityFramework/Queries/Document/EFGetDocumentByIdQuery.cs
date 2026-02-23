@@ -20,7 +20,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
     {
         public string RequiredPermission => PermissionCodes.DocumentsRead;
 
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.Document;
 
         public int Id => 9;
 

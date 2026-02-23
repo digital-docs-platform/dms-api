@@ -21,7 +21,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.DocumentVersion
     {
         public string RequiredPermission => PermissionCodes.DocumentsVersionsRead;
 
-        public PermissionScope Scope => PermissionScope.DocumentType;
+        public PermissionScope Scope => PermissionScope.Document;
 
         public int Id => 10;
 

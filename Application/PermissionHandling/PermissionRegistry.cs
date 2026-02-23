@@ -23,7 +23,8 @@ namespace Application.PermissionHandling
 
                 [PermissionCodes.GroupsRead] = PermissionScope.Group,
                 [PermissionCodes.GroupWrite] = PermissionScope.Group,
-                [PermissionCodes.GroupAddUser] = PermissionScope.Group
+                [PermissionCodes.GroupAddUser] = PermissionScope.Group,
+                [PermissionCodes.GroupRemoveUser] = PermissionScope.Group
             };
 
         // dependencies (Requires)
@@ -41,7 +42,8 @@ namespace Application.PermissionHandling
                 
 
                 [PermissionCodes.GroupWrite] = new[] { PermissionCodes.GroupsRead },
-                [PermissionCodes.GroupAddUser] = new[] { PermissionCodes.GroupsRead }
+                [PermissionCodes.GroupAddUser] = new[] { PermissionCodes.GroupsRead },
+                [PermissionCodes.GroupRemoveUser] = new[] { PermissionCodes.GroupsRead }
 
 
             };
