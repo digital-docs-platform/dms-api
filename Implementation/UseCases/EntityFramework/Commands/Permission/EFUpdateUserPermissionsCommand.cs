@@ -6,6 +6,7 @@ using Application.UseCases.Commands.Requests.Permissions;
 using DataAccess;
 using Domain.Entities;
 using Domain.Enums;
+using Implementation.PermissionHandling;
 using Microsoft.EntityFrameworkCore;
 
 namespace Implementation.UseCases.EntityFramework.Commands.Permission
@@ -19,60 +20,61 @@ namespace Implementation.UseCases.EntityFramework.Commands.Permission
         public string Description => "Replace user permission grants (snapshot)";
 
         private readonly IApplicationActor _actor;
+        private readonly IPermissionSnapshotService _permissionSnapshotService;
 
-        public EFUpdateUserPermissionsCommand(IApplicationActor actor, DatabaseContext context)
+        public EFUpdateUserPermissionsCommand(
+                                            IApplicationActor actor, 
+                                            IPermissionSnapshotService permissionSnapshotService,
+                                            DatabaseContext context)
             : base(context)
         {
             _actor = actor;
+            _permissionSnapshotService = permissionSnapshotService;
         }
 
         public async Task ExecuteAsync(UpdateUserPermissionsRequest request, CancellationToken ct)
         {
-           
+
             var userExists = await _context.Users.AnyAsync(u => u.Id == request.UserId, ct);
             if (!userExists)
                 throw new EntityNotFoundException("User not found.");
 
-           
             var currentGrants = await _context.UserPermissionGrants
                 .Where(x => x.UserId == request.UserId)
                 .ToListAsync(ct);
 
-            
-            var allPermissionIds = await _context.Permissions
-                .Select(p => p.Id)
-                .ToListAsync(ct);
-
+            var allPermissionIds = (await _context.Permissions.Select(p => p.Id).ToListAsync(ct)).ToHashSet();
             foreach (var p in request.Permissions)
             {
                 if (!allPermissionIds.Contains(p.PermissionId))
                     throw new EntityNotFoundException("Permission does not exist.");
             }
 
-            // 4) remove grants that are NOT in request (by PermissionId + DocumentTypeId)
-            var toRemove = currentGrants
-                .Where(g => !request.Permissions.Any(p =>
-                    p.PermissionId == g.PermissionId &&
-                    p.DocumentTypeId == g.DocumentTypeId))
+           
+            var requestedKeys = request.Permissions
+                .Select(p => new PermissionKey
+                {
+                    PermissionId = p.PermissionId,
+                    DocumentTypeId = p.DocumentTypeId
+                })
                 .ToList();
+
+            
+            var (toRemove, toAddKeys) = _permissionSnapshotService.Reconcile(
+                currentGrants,
+                requestedKeys,
+                g => g.PermissionId,
+                g => g.DocumentTypeId);
 
             _context.UserPermissionGrants.RemoveRange(toRemove);
 
-            // 5) add grants that are in request but NOT in db
-            foreach (var p in request.Permissions)
+            foreach (var key in toAddKeys)
             {
-                var alreadyExists = currentGrants.Any(g =>
-                    g.PermissionId == p.PermissionId &&
-                    g.DocumentTypeId == p.DocumentTypeId);
-
-                if (alreadyExists)
-                    continue;
-
                 _context.UserPermissionGrants.Add(new UserPermissionGrant
                 {
                     UserId = request.UserId,
-                    PermissionId = p.PermissionId,
-                    DocumentTypeId = p.DocumentTypeId,
+                    PermissionId = key.PermissionId,
+                    DocumentTypeId = key.DocumentTypeId,
                     GrantedByUserId = _actor.Id
                 });
             }

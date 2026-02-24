@@ -59,6 +59,29 @@ namespace API.Controllers
                 Data = userPermissions
             });
         }
+
+        [HttpPut("update/group")]
+        public async Task<IActionResult> UpdateGroupPermissions(
+                                        [FromBody] UpdateGroupPermissionsRequest request,
+                                        [FromServices] IUpdateGroupPermissionsCommand command,
+                                        IGetGroupPermissionsQuery query,
+                                        CancellationToken ct)
+        {
+
+            await _commandHandler.HandleAsync(command, request, ct);
+
+
+            var groupPermissions = await _queryHandler.HandleAsync(
+                                                        query, 
+                                                        new IdSearch<Guid> { Id = request.GroupId},
+                                                        ct);
+
+            return Ok(new SuccessResponse
+            {
+                Data = groupPermissions,
+                Message = "Successfully updated group permissions!" 
+            });
+        }
         
      
     }

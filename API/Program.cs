@@ -199,6 +199,7 @@ builder.Services.AddTransient<IUpdateUserPermissionsCommand, EFUpdateUserPermiss
 builder.Services.AddTransient<ICreateGroupCommand, EFCreateGroupCommand>();
 builder.Services.AddTransient<IAddUserToGroupCommand, EFAddUserToGroupCommand>();
 builder.Services.AddTransient<IRemoveUserFromGroupCommand, EFRemoveUserFromGroupCommand>();
+builder.Services.AddTransient<IUpdateGroupPermissionsCommand, EFUpdateGroupPermissionsCommand>();
 
 //End of command services
 
