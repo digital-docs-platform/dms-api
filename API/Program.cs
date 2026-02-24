@@ -163,6 +163,7 @@ builder.Services.AddScoped<IAuthCookieService, AuthCookieService>();
 
 builder.Services.AddScoped<IPermissionHandler, PermissionHandler>();
 builder.Services.AddScoped<IPermissionProvider, PermissionProvider>();
+builder.Services.AddScoped<IPermissionSnapshotService, PermissionSnapshotService>();
 builder.Services.AddScoped<IDocumentTypeResolver, DocumentTypeResolver>();
 
 
