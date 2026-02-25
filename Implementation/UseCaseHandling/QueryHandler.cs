@@ -1,4 +1,6 @@
-﻿using Application.PermissionHandling;
+﻿using Application;
+using Application.Logging;
+using Application.PermissionHandling;
 using Application.PermissionHandling.Resolver;
 using Application.UseCaseHandling;
 using Application.UseCaseHandling.CQReslover;
@@ -21,17 +23,25 @@ namespace Implementation.UseCaseHandling
         private readonly IPermissionHandler _permissionHandler;
         private readonly IDocumentTypeResolver _documentTypeResolver;
         private readonly IRequestValidation _requestValidation;
+        private readonly IAuditLogger _auditLogger;
+        private readonly IApplicationActor _actor;
+        private readonly IRequestContext _requestContext;
 
 
         public QueryHandler(
             IPermissionHandler permissionHandler,
             IDocumentTypeResolver documentTypeResolver,
-            IRequestValidation requestValidation)
+            IRequestValidation requestValidation,
+            IAuditLogger auditLogger,
+            IApplicationActor actor,
+            IRequestContext requestContext)
         {
             _permissionHandler = permissionHandler;
             _documentTypeResolver = documentTypeResolver;
             _requestValidation = requestValidation;
-
+            _auditLogger = auditLogger;
+            _actor = actor;
+            _requestContext = requestContext;
         }
         public async Task<TResponse> HandleAsync<TSearch, TResponse>(IQuery<TSearch, TResponse> query, TSearch search, CancellationToken ct) where TResponse : class
         {
@@ -53,7 +63,19 @@ namespace Implementation.UseCaseHandling
             await _requestValidation.ValidateAsync(search, ct);
 
 
-            return await query.ExecuteAsync(search, ct);
+
+            var result =  await query.ExecuteAsync(search, ct);
+
+            if (query is IAuditableUseCase<TSearch> auditable)
+            {
+                var entry = auditable.BuildAuditEntry(search, _actor);
+                entry.IpAddress = _requestContext.IpAddress;
+                await _auditLogger.LogAsync(entry, ct);
+            }
+
+            return result;
+
+
         }
     }
 }

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface IUpdateGroupPermissionsCommand : ICommand<UpdateGroupPermissionsRequest>, IProtectedUseCase
+    public interface IUpdateGroupPermissionsCommand 
+                     : ICommand<UpdateGroupPermissionsRequest>, 
+                       IProtectedUseCase,
+                       IAuditableUseCase<UpdateGroupPermissionsRequest>
     {
     }
 }

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface IRemoveUserFromGroupCommand : ICommand<RemoveUserFromGroupRequest>, IProtectedUseCase
+    public interface IRemoveUserFromGroupCommand 
+                     : ICommand<RemoveUserFromGroupRequest>,
+                     IProtectedUseCase,
+                     IAuditableUseCase<RemoveUserFromGroupRequest>
     {
     }
 }

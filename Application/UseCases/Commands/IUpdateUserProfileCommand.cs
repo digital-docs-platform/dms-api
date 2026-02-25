@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface IUpdateUserProfileCommand : ICommand<UpdateUserProfileRequest>, IProtectedUseCase
+    public interface IUpdateUserProfileCommand 
+                    : ICommand<UpdateUserProfileRequest>,
+                    IProtectedUseCase,
+                    IAuditableUseCase<UpdateUserProfileRequest>
     {
     }
 }

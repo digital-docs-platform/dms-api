@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface ICreateUserCommand : ICommand<CreateUserRequest>, IProtectedUseCase
+    public interface ICreateUserCommand 
+                    : ICommand<CreateUserRequest>,
+                    IProtectedUseCase,
+                    IAuditableUseCase<CreateUserRequest>
     {
 
     }

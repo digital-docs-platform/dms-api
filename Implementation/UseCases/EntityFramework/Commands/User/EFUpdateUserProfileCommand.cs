@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using Application;
+using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases;
 using Application.UseCases.Commands;
@@ -25,6 +27,27 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
         public string Name => "Update user info";
 
         public string Description => "Update user informations";
+
+        public AuditLogEntry BuildAuditEntry(UpdateUserProfileRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.UserId,
+                EntityType = nameof(Domain.Entities.User),
+                EntityName = $"{input.FirstName} {input.LastName}",
+                EventType = AuditEventType.UserProfileUpdated,
+                Metadata = new
+                {
+                    input.FirstName,
+                    input.LastName,
+                    input.Email,
+                    input.JobTitle,
+                    input.Department
+                }
+            };
+        }
         public EFUpdateUserProfileCommand(DatabaseContext context)
             : base(context)
         {
@@ -51,5 +74,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
 
             await _context.SaveChangesAsync();
         }
+
     }
 }

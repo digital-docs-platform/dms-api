@@ -18,8 +18,6 @@ namespace Implementation.PermissionHandling
 
         public async Task EnsureAsync(string permissionCode, Guid? documentTypeId, CancellationToken ct = default)
         {
-            if (_actor is UnauthorizedActor)
-                throw new UnauthorizedException("User is not authenticated.");
 
             var perms = await _permissionProvider.GetUserPermissionsAsync(_actor.Id, ct);
 

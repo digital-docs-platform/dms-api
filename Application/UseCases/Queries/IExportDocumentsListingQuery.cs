@@ -10,7 +10,8 @@ namespace Application.UseCases.Queries
 {
     public interface IExportDocumentsListingQuery
                         : IProtectedUseCase,
-                          IQuery<ExportDocumentsListingSearch, ExportFileResult>
+                          IQuery<ExportDocumentsListingSearch, ExportFileResult>,
+                          IAuditableUseCase<ExportDocumentsListingSearch>
     {
     }
 }

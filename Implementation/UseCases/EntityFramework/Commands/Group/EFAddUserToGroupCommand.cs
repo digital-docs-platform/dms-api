@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Group;
@@ -25,6 +26,23 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
         public string Name => "Add user to group";
 
         public string Description => "Add user to group";
+        public AuditLogEntry BuildAuditEntry(AddUserToGroupRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.GroupId,
+                EntityType = nameof(Domain.Entities.Group),
+                EntityName = $"User added to Group with id: {input.GroupId}",
+                EventType = AuditEventType.UserAddedToGroup,
+                Metadata = new
+                {
+                    AddeduserId = input.UserId,
+                    ToGroupId = input.GroupId
+                }
+            };
+        }
 
 
 
@@ -64,5 +82,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
 
 
         }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using Application;
+using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Group;
@@ -24,6 +26,24 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
         public string Name => "Remove user from group";
 
         public string Description => "Remove user from user group";
+
+        public AuditLogEntry BuildAuditEntry(RemoveUserFromGroupRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.GroupId,
+                EntityType = nameof(Domain.Entities.Group),
+                EntityName = $"User removed from Group with id: {input.GroupId}",
+                EventType = AuditEventType.UserRemovedFromGroup,
+                Metadata = new
+                {
+                    RemovedUserId = input.UserId,
+                    FromGroupId = input.GroupId
+                }
+            };
+        }
 
 
         public EFRemoveUserFromGroupCommand(DatabaseContext context)
@@ -55,5 +75,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
             _context.UserGroups.Remove(userGroup);
             await _context.SaveChangesAsync(ct);
         }
+
+       
     }
 }

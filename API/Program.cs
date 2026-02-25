@@ -1,11 +1,13 @@
 ﻿using API.Auth.Cookies;
-
+using API.DTO.Response;
+using API.Infrastructure;
 using API.Middleware;
 using Application;
 using Application.DocumentFields;
 using Application.jwt;
 using Application.Jwt;
 using Application.Listings;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.PermissionHandling.Resolver;
 using Application.Security.Cryptography;
@@ -22,6 +24,7 @@ using FluentValidation;
 using Implementation.jwt;
 using Implementation.Listings;
 using Implementation.Listings.Exporters;
+using Implementation.Logging;
 using Implementation.PermissionHandling;
 using Implementation.PermissionHandling.Resolver;
 using Implementation.Querying.DocumentTypeFieldQuerying;
@@ -45,6 +48,7 @@ using Implementation.UseCases.EntityFramework.Queries.Permission;
 using Implementation.UseCases.EntityFramework.Queries.User;
 using Implementation.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.IdentityModel.Tokens;
@@ -56,7 +60,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new AuthorizeFilter());
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -106,7 +114,7 @@ builder.Services
           ValidateIssuerSigningKey = true,
           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
           ValidateLifetime = true,
-          ClockSkew = TimeSpan.FromSeconds(30)
+          ClockSkew = TimeSpan.Zero
       };
 
       //uzmi token iz HttpOnly cookie-ja
@@ -118,6 +126,24 @@ builder.Services
                   context.Token = token;
 
               return Task.CompletedTask;
+          },
+
+          OnChallenge = async context =>
+          {
+              context.HandleResponse();
+
+              var failureType = context.AuthenticateFailure?.GetType().Name ?? "null";
+
+              var message = context.AuthenticateFailure is SecurityTokenExpiredException
+                  ? "Session expired."
+                  : $"Unauthorized. (failure: {failureType})";
+
+              context.Response.StatusCode = 401;
+              await context.Response.WriteAsJsonAsync(new ErrorResponse
+              {
+                  Message = message,
+                  Data = null
+              });
           }
       };
   });
@@ -160,6 +186,9 @@ builder.Services.AddScoped<IApplicationActor>(sp =>
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddScoped<IAuthCookieService, AuthCookieService>();
 
+
+builder.Services.AddScoped<IRequestContext, HttpRequestContext>();
+builder.Services.AddScoped<IAuditLogger, AuditLogger>();
 
 builder.Services.AddScoped<IPermissionHandler, PermissionHandler>();
 builder.Services.AddScoped<IPermissionProvider, PermissionProvider>();

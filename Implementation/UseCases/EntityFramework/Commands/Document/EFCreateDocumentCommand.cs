@@ -1,11 +1,13 @@
 ﻿using Application;
 using Application.DocumentFields;
 using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Document;
 using DataAccess;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,33 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
         public int Id => 4;
         public string Name => "Create new document";
         public string Description => "Create new instance that represents a document (not new DocumentVersion)";
+        public AuditLogEntry BuildAuditEntry(CreateDocumentRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.Id,
+                EntityType = nameof(Domain.Entities.Document),
+                EntityName = input.Title,
+                EventType = AuditEventType.DocumentCreated,
+                Metadata = new
+                {
+                    Title = input.Title,
+                    DocumentTypeId = input.DocumentTypeId,
+                    FieldsInput = input.FieldsInput.Select(f => new
+                    {
+                        f.FieldDefinitionId,
+                        f.Value
+                    })
+                },
+                IpAddress = null,
+            };
+        }
+
+
+
+
 
         private readonly IApplicationActor _actor;
         private readonly IFieldValueMapper _fieldValueMapper;
@@ -167,5 +196,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
 
             return false;
         }
+
+       
     }
 }

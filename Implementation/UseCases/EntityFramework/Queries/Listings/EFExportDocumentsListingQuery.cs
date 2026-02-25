@@ -1,5 +1,7 @@
-﻿using Application.Exceptions;
+﻿using Application;
+using Application.Exceptions;
 using Application.Listings;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases;
 using Application.UseCases.Queries;
@@ -169,6 +171,28 @@ namespace Implementation.UseCases.EntityFramework.Queries.Listings
             };
 
             return await _listingExportDispatcher.ExecuteAsync(search.Format, listingDoc, ct);
+        }
+
+        public AuditLogEntry BuildAuditEntry(ExportDocumentsListingSearch input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.DocumentTypeId,
+                EntityType = nameof(Domain.Entities.DocumentType),
+                EntityName = $"Export listing for DocumentType with id: {input.DocumentTypeId}",
+                EventType = AuditEventType.DocumentsExported,
+                Metadata = new
+                {
+                    input.DocumentTypeId,
+                    input.Title,
+                    input.Format,
+                    Columns = input.Columns,
+                    Filters = input.Filters,
+                    Sort = input.Sort
+                }
+            };
         }
     }
 }

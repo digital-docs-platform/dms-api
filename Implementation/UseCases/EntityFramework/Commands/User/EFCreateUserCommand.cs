@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using Application;
+using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.Security.Cryptography;
 using Application.UseCases;
@@ -32,6 +34,27 @@ namespace Implementation.UseCases.EntityFramework.Commands.User
         public string RequiredPermission => PermissionCodes.UsersWrite;
 
         public PermissionScope Scope => PermissionScope.User;
+
+        public AuditLogEntry BuildAuditEntry(CreateUserRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.Id,
+                EntityType = nameof(Domain.Entities.User),
+                EntityName = $"{input.FirstName} {input.LastName}",
+                EventType = AuditEventType.UserCreated,
+                Metadata = new
+                {
+                    input.FirstName,
+                    input.LastName,
+                    input.Email,
+                    input.JobTitle,
+                    input.Department
+                }
+            };
+        }
 
         public async Task ExecuteAsync(CreateUserRequest request, CancellationToken ct)
         {

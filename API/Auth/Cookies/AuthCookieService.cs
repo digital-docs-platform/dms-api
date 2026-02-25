@@ -14,8 +14,11 @@ namespace API.Auth.Cookies
         {
             var name = _config["AuthCookie:Name"] ?? "dms_at";
 
-            var minutesStr = _config["Jwt:AccessTokenMinutes"];
-            var minutes = int.TryParse(minutesStr, out var m) ? m : 15;
+            var jwtMinutesStr = _config["Jwt:AccessTokenMinutes"];
+            var jwtMinutes = int.TryParse(jwtMinutesStr, out var j) ? j : 15;
+
+            var bufferMinutesStr = _config["AuthCookie:CookieBufferMinutes"];
+            var bufferMinutes = int.TryParse(bufferMinutesStr, out var b) ? b : 5;
 
             var sameSite = ParseSameSite(_config["AuthCookie:SameSite"], SameSiteMode.Strict);
             var secure = ParseBool(_config["AuthCookie:Secure"], defaultValue: false);
@@ -25,7 +28,7 @@ namespace API.Auth.Cookies
                 HttpOnly = true,
                 Secure = secure,
                 SameSite = sameSite,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(minutes),
+                Expires = DateTimeOffset.UtcNow.AddMinutes(jwtMinutes + bufferMinutes),
                 // Path = "/" znači cookie važi za celu app
                 Path = "/"
             });

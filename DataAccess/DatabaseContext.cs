@@ -28,6 +28,7 @@ namespace DataAccess
         public DbSet<DocumentTypeFieldValue> DocumentTypeFieldValues { get; set; }
         public DbSet<DocumentVersion> DocumentVersions { get; set; }
         public DbSet<DocumentTypeFieldOption> DocumentTypeFieldOptions {  get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

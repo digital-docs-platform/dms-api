@@ -1,4 +1,6 @@
-﻿using Application.Exceptions;
+﻿using Application;
+using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Group;
@@ -83,7 +85,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
 
             var group = new Domain.Entities.Group
             {
-                Id = Guid.NewGuid(),
+                Id = request.Id,
                 Name = request.Name,
                 Description = request.Description,
                 CreatedAt = DateTime.UtcNow,
@@ -103,6 +105,29 @@ namespace Implementation.UseCases.EntityFramework.Commands.Group
 
 
 
+        }
+
+        public AuditLogEntry BuildAuditEntry(CreateGroupRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.Id,
+                EntityType = nameof(Domain.Entities.Group),
+                EntityName = input.Name,
+                EventType = AuditEventType.GroupCreated,
+                Metadata = new
+                {
+                    input.Name,
+                    input.Description,
+                    Permissions = input.Permissions.Select(p => new
+                    {
+                        p.Id,
+                        p.DocumentTypeId
+                    })
+                }
+            };
         }
     }
 }

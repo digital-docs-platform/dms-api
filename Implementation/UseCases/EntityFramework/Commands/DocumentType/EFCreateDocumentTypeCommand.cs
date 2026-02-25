@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases;
 using Application.UseCases.Commands;
@@ -22,6 +23,39 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
         public string Description => "Create new Document Type";
 
         private readonly IApplicationActor _actor;
+
+        public AuditLogEntry BuildAuditEntry(CreateDocumentTypeRequest input, IApplicationActor actor)
+        {
+            return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.DocumentTypeId,
+                EntityType = nameof(Domain.Entities.DocumentType),
+                EntityName = input.Name,
+                EventType = AuditEventType.DocumentTypeCreated,
+                Metadata = new
+                {
+                    input.Name,
+                    input.Description,
+                    FieldDefinitions = input.FieldDefinitions.Select(f => new
+                    {
+                        f.Label,
+                        f.Description,
+                        f.DataType,
+                        f.IsRequired,
+                        f.IsSearchable,
+                        f.IsSortable,
+                        Options = f.SelectOptions.Select(o => new
+                        {
+                            o.Label,
+                            o.SortOrder
+                        }).ToList()
+                    })
+                }
+            };
+        }
+
 
         public EFCreateDocumentTypeCommand(IApplicationActor actor, DatabaseContext context) : base(context)
         {
@@ -100,5 +134,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
 
             return def;
         }
+
+       
     }
 }

@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface ICreateDocumentCommand : ICommand<CreateDocumentRequest>, IProtectedUseCase
+    public interface ICreateDocumentCommand 
+                     : ICommand<CreateDocumentRequest>,
+                       IProtectedUseCase,
+                       IAuditableUseCase<CreateDocumentRequest>  
     {
     }
 }

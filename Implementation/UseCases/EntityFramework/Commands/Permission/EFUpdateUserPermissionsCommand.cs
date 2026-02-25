@@ -1,5 +1,6 @@
 ﻿using Application;
 using Application.Exceptions;
+using Application.Logging;
 using Application.PermissionHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Permissions;
@@ -80,6 +81,28 @@ namespace Implementation.UseCases.EntityFramework.Commands.Permission
             }
 
             await _context.SaveChangesAsync(ct);
+        }
+
+        public AuditLogEntry BuildAuditEntry(UpdateUserPermissionsRequest input, IApplicationActor actor)
+        {
+           return new AuditLogEntry
+            {
+                ActorEmail = actor.Email,
+                ActorId = actor.Id,
+                EntityId = input.UserId,
+                EntityType = nameof(Domain.Entities.User),
+                EntityName = $"User permissions updated for user with id: {input.UserId}",
+                EventType = AuditEventType.UserPermissionsUpdated,
+                Metadata = new
+                {
+                    input.UserId,
+                    UpdatedPermissions = input.Permissions.Select(p => new
+                    {
+                        p.PermissionId,
+                        p.DocumentTypeId
+                    })
+                }
+            };
         }
     }
 }

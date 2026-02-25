@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Commands
 {
-    public interface IAddUserToGroupCommand : ICommand<AddUserToGroupRequest>, IProtectedUseCase
+    public interface IAddUserToGroupCommand 
+        : ICommand<AddUserToGroupRequest>,
+        IProtectedUseCase,
+        IAuditableUseCase<AddUserToGroupRequest>
     {
     }
 }
