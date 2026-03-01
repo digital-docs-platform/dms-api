@@ -39,6 +39,7 @@ using Implementation.UseCases.EntityFramework.Commands.DocumentType;
 using Implementation.UseCases.EntityFramework.Commands.Group;
 using Implementation.UseCases.EntityFramework.Commands.Permission;
 using Implementation.UseCases.EntityFramework.Commands.User;
+using Implementation.UseCases.EntityFramework.Queries.Audit;
 using Implementation.UseCases.EntityFramework.Queries.Document;
 using Implementation.UseCases.EntityFramework.Queries.DocumentType;
 using Implementation.UseCases.EntityFramework.Queries.DocumentVersion;
@@ -63,6 +64,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(new AuthorizeFilter());
+})
+.AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -132,11 +137,10 @@ builder.Services
           {
               context.HandleResponse();
 
-              var failureType = context.AuthenticateFailure?.GetType().Name ?? "null";
 
               var message = context.AuthenticateFailure is SecurityTokenExpiredException
                   ? "Session expired."
-                  : $"Unauthorized. (failure: {failureType})";
+                  : $"Unauthorized.";
 
               context.Response.StatusCode = 401;
               await context.Response.WriteAsJsonAsync(new ErrorResponse
@@ -259,6 +263,7 @@ builder.Services.AddTransient<IGetPermissionsCatalogQuery, EFGetPermissionsCatal
 builder.Services.AddTransient<IGetUserGrantPermissionsQuery, EFGetUserGrantPermissionsQuery>();
 builder.Services.AddTransient<IGetGroupPermissionsQuery, EFGetGroupPermissionsQuery>();
 builder.Services.AddTransient<IGetGroupByIdQuery, EFGetGroupByIdQuery>();
+builder.Services.AddTransient<IGetUserAuditHistoryQuery, EFGetUserAuditHistoryQuery>();
 
 //END OF QUERY SERVICES
 

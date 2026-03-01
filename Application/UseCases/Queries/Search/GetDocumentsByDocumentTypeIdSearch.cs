@@ -27,7 +27,7 @@ namespace Application.UseCases.Queries.Search
 
     public sealed class SortDto
     {
-        public string Active { get; set; } = string.Empty; // field code OR system field
-        public string Direction { get; set; } = "asc";     // "asc" | "desc"
+        public string Active { get; set; } = string.Empty;
+        public string? Direction { get; set; } = "asc";   
     }
 }
