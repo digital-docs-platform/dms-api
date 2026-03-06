@@ -1,4 +1,8 @@
-﻿using API.Auth.Cookies;
+﻿using Application.Storage;
+using Implementation.Storage;
+using Minio;
+using Minio.DataModel.Args;
+using API.Auth.Cookies;
 using API.DTO.Response;
 using API.Infrastructure;
 using API.Middleware;
@@ -92,6 +96,25 @@ builder.Services.AddCors(options =>
 
 
 // My services
+
+// MINIO CONFIG SECTION
+
+builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection("MinIo"));
+
+var minioOptions = builder.Configuration.GetSection("MinIo").Get<MinioOptions>()
+    ?? throw new InvalidOperationException("MinIo settings are missing.");
+
+var minioUri = new Uri(minioOptions.ServiceUrl);
+
+builder.Services.AddSingleton<IMinioClient>(_ =>
+    new MinioClient()
+        .WithEndpoint(minioUri.Host, minioUri.Port)
+        .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey)
+        .WithSSL(minioUri.Scheme == "https")
+        .Build()
+);
+
+builder.Services.AddTransient<IFileStorageService, MinioFileStorageService>();
 
 // JWT CONFIG SECTION
 
@@ -296,6 +319,15 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    await db.Database.MigrateAsync();
+
+    var minioClient = scope.ServiceProvider.GetRequiredService<IMinioClient>();
+    var bucketName = minioOptions.Bucket;
+    var bucketExists = await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName));
+    if (!bucketExists)
+        await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName));
+
     var seeder = scope.ServiceProvider.GetRequiredService<IDatabaseSeeder>();
     await seeder.SeedAsync();
 }

@@ -17,6 +17,25 @@ services:
       retries: 20
       start_period: 30s
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: "minioadmin"
+      MINIO_ROOT_PASSWORD: "minioadmin123"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web konzola (http://localhost:9001)
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9000/minio/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
   api:
     container_name: api
     build:
@@ -25,14 +44,20 @@ services:
     environment:
       ASPNETCORE_URLS: "http://+:8080"
       ASPNETCORE_ENVIRONMENT: "Development"
-
-      # API u istom docker network-u vidi bazu po imenu servisa: sqlserver
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=DmsDb;User Id=sa;Password=YourStrong!Passw0rd123;TrustServerCertificate=True;Encrypt=False;"
+      ConnectionStrings__DefaultLocalConnection: "Server=sqlserver,1433;Database=DmsDb;User Id=sa;Password=YourStrong!Passw0rd123;TrustServerCertificate=True;Encrypt=False;"
+      MinIo__ServiceUrl: "http://minio:9000"
+      MinIo__AccessKey: "minioadmin"
+      MinIo__SecretKey: "minioadmin123"
+      MinIo__Bucket: "documents"
+      MinIo__ForcePathStyle: "true"
     ports:
       - "8080:8080"
     depends_on:
       sqlserver:
         condition: service_healthy
+      minio:
+        condition: service_healthy
 
 volumes:
   sqlserver_data:
+  minio_data:
