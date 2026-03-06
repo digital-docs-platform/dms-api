@@ -16,6 +16,7 @@ namespace Application.PermissionHandling
         public const string DocumentsVersionsRead = "document.versions.read";
         public const string DocumentsExport = "document.export";
         public const string DocumentsDownload = "documents.download";
+        public const string DocumentsAuditRead = "documents.audit.read";
 
         public const string UsersRead = "users.read";
         public const string UsersWrite = "users.write";

@@ -264,6 +264,7 @@ builder.Services.AddTransient<IGetUserGrantPermissionsQuery, EFGetUserGrantPermi
 builder.Services.AddTransient<IGetGroupPermissionsQuery, EFGetGroupPermissionsQuery>();
 builder.Services.AddTransient<IGetGroupByIdQuery, EFGetGroupByIdQuery>();
 builder.Services.AddTransient<IGetUserAuditHistoryQuery, EFGetUserAuditHistoryQuery>();
+builder.Services.AddTransient<IGetDocumentAuditHistoryQuery, EFGetDocumentAuditHistoryQuery>();
 
 //END OF QUERY SERVICES
 

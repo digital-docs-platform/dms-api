@@ -15,6 +15,7 @@ namespace Application.PermissionHandling
                 [PermissionCodes.DocumentsVersionsRead] = PermissionScope.Document,
                 [PermissionCodes.DocumentsExport] = PermissionScope.Document,
                 [PermissionCodes.DocumentsDownload] = PermissionScope.Document,
+                [PermissionCodes.DocumentsAuditRead] = PermissionScope.Document,
 
                 [PermissionCodes.UsersRead] = PermissionScope.User,
                 [PermissionCodes.UsersWrite] = PermissionScope.User,
@@ -36,6 +37,8 @@ namespace Application.PermissionHandling
                 [PermissionCodes.DocumentsExport] = new[] { PermissionCodes.DocumentsRead },
                 [PermissionCodes.DocumentsVersionsRead] = new[] { PermissionCodes.DocumentsRead },
                 [PermissionCodes.DocumentsDownload] = new[] {PermissionCodes.DocumentsRead},
+                [PermissionCodes.DocumentsAuditRead] = new[] { PermissionCodes.DocumentsRead },
+    
 
                 [PermissionCodes.UsersWrite] = new[] {PermissionCodes.UsersRead},
                 [PermissionCodes.UsersUpdate] = new[] { PermissionCodes.UsersRead },

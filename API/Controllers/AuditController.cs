@@ -22,7 +22,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> GetUserAuditHistory(
             [FromServices] IGetUserAuditHistoryQuery query,
-            [FromBody]  GetUserAuditHistorySearch search,
+            [FromBody] GetUserAuditHistorySearch search,
             CancellationToken ct)
         {
 
@@ -35,6 +35,20 @@ namespace API.Controllers
             });
         }
 
-       
+        [HttpPost("document")]
+        public async Task<IActionResult> GetDocumentAuditHistory(
+            [FromServices] IGetDocumentAuditHistoryQuery query,
+            [FromBody] GetDocumentAuditHistorySearch search,
+            CancellationToken ct)
+        {
+            var result = await _queryHandler.HandleAsync(query, search, ct);
+            return Ok(new SuccessResponse
+            {
+                Data = result,
+                Message = "Successfully get Document Audit History. . ."
+            });
+
+
+        }
     }
 }
