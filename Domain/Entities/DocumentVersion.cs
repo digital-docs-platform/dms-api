@@ -17,15 +17,7 @@ namespace Domain.Entities
         public Guid CreatedBy { get; set; }
         public User CreatedByUser { get; set; } = default!;
 
-        // Fajl / sadržaj
-        public string FileName { get; set; }
-        public string ContentType { get; set; }
-        public long FileSizeBytes { get; set; }
-
-        // Gde je fajl smešten
-        public string StorageKey { get; set; }   // npr "docs/2026/01/abc.pdf" ili S3 key
-
-
+        public ICollection<DocumentVersionFile> Files { get; set; } = new List<DocumentVersionFile>();
         public ICollection<DocumentTypeFieldValue> FieldValues { get; set; }
             = new List<DocumentTypeFieldValue>();
         public bool IsDeleted { get; set; }

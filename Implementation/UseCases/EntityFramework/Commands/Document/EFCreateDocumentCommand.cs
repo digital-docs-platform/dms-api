@@ -1,13 +1,13 @@
-﻿using Application;
+using Application;
 using Application.DocumentFields;
 using Application.Exceptions;
 using Application.Logging;
 using Application.PermissionHandling;
+using Application.Storage;
 using Application.UseCases;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Document;
 using DataAccess;
-using DocumentFormat.OpenXml.Bibliography;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +23,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
         public int Id => 4;
         public string Name => "Create new document";
         public string Description => "Create new instance that represents a document (not new DocumentVersion)";
+
         public AuditLogEntry BuildAuditEntry(CreateDocumentRequest input, IApplicationActor actor)
         {
             return new AuditLogEntry
@@ -47,25 +48,26 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
             };
         }
 
-
-
-
-
         private readonly IApplicationActor _actor;
         private readonly IFieldValueMapper _fieldValueMapper;
+        private readonly IFileStorageService _fileStorageService;
 
         public EFCreateDocumentCommand(
             DatabaseContext context,
             IApplicationActor actor,
-            IFieldValueMapper fieldValueMapper) : base(context)
+            IFieldValueMapper fieldValueMapper,
+            IFileStorageService fileStorageService) : base(context)
         {
             _actor = actor;
             _fieldValueMapper = fieldValueMapper;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task ExecuteAsync(CreateDocumentRequest request, CancellationToken ct)
         {
             var errors = new List<ValidationError>();
+
+            // --- Document type validation ---
 
             var docTypeExists = await _context.DocumentTypes
                 .AnyAsync(dt => dt.Id == request.DocumentTypeId && dt.IsDeleted == false, ct);
@@ -104,31 +106,59 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                 }
 
                 if (IsEmptyJson(inp.Value))
-                {
                     errors.Add(new ValidationError(def.Code ?? def.Id.ToString(), "Required field value is empty."));
+            }
+
+            // --- File validation ---
+
+            if (!request.Files.Any())
+                errors.Add(new ValidationError(nameof(request.Files), "At least one file is required."));
+
+            const long maxFileSizeBytes = 20 * 1024 * 1024; // 20MB
+
+            var validatedFiles = new List<(DocumentFileInput Input, FileExtension Extension)>();
+
+            foreach (var file in request.Files)
+            {
+                var rawExt = Path.GetExtension(file.FileName).TrimStart('.');
+
+                if (!Enum.TryParse<FileExtension>(rawExt, ignoreCase: true, out var fileExtension))
+                {
+                    errors.Add(new ValidationError(nameof(request.Files),
+                        $"File '{file.FileName}' has unsupported extension '.{rawExt}'."));
+                    continue;
                 }
+
+                if (file.SizeInBytes > maxFileSizeBytes)
+                {
+                    errors.Add(new ValidationError(nameof(request.Files),
+                        $"File '{file.FileName}' exceeds the maximum allowed size of 20MB."));
+                    continue;
+                }
+
+                validatedFiles.Add((file, fileExtension));
             }
 
             if (errors.Count > 0)
                 throw new RequestDataValidationException(errors);
 
+            // --- Build version ---
+
+            var versionId = Guid.NewGuid();
 
             var version = new DocumentVersion
             {
-                Id = Guid.NewGuid(),
+                Id = versionId,
                 VersionNumber = 1,
                 CreatedBy = _actor.Id,
-                ContentType = "ContentType",
-                FileName = "dummy",
-                FileSizeBytes = 1,
                 IsCurrent = true,
                 ChangeNote = "initial insert",
-                StorageKey = "Za sada nista",
-
-                FieldValues = new List<DocumentTypeFieldValue>()
+                FieldValues = new List<DocumentTypeFieldValue>(),
+                Files = new List<DocumentVersionFile>()
             };
 
-            // Type check + mapping u EAV kolone
+            // --- Field value mapping ---
+
             foreach (var input in request.FieldsInput)
             {
                 if (!defsById.TryGetValue(input.FieldDefinitionId, out var def))
@@ -137,7 +167,6 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                 if (!def.IsRequired && IsEmptyJson(input.Value))
                     continue;
 
-                // DB validacija optionId-a
                 if (def.DataType == FieldDataType.Select)
                 {
                     if (input.Value.ValueKind != JsonValueKind.Number || !input.Value.TryGetInt32(out var optionId))
@@ -156,10 +185,7 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
                     }
                 }
 
-                var fv = new DocumentTypeFieldValue
-                {
-                    FieldDefinitionId = def.Id
-                };
+                var fv = new DocumentTypeFieldValue { FieldDefinitionId = def.Id };
 
                 if (!_fieldValueMapper.TryApply(def.DataType, input.Value, fv, out var errorMessage))
                 {
@@ -172,6 +198,36 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
 
             if (errors.Count > 0)
                 throw new RequestDataValidationException(errors);
+
+            // --- Upload files to MinIO, then build DocumentVersionFile entities ---
+
+            foreach (var (fileInput, fileExtension) in validatedFiles)
+            {
+                var fileId = Guid.NewGuid();
+                var uniqueFileName = $"{fileId}_{fileInput.FileName}";
+                var storageKey = $"{request.Id}/{versionId}/{uniqueFileName}";
+
+                await _fileStorageService.UploadAsync(
+                    storageKey,
+                    fileInput.Content,
+                    fileInput.SizeInBytes,
+                    fileInput.ContentType,
+                    ct);
+
+                version.Files.Add(new DocumentVersionFile
+                {
+                    Id = fileId,
+                    DocumentVersionId = versionId,
+                    Name = uniqueFileName,
+                    Extension = fileExtension,
+                    ContentType = fileInput.ContentType,
+                    SizeInBytes = fileInput.SizeInBytes,
+                    StorageKey = storageKey,
+                    Order = fileInput.Order
+                });
+            }
+
+            // --- Persist ---
 
             var doc = new Domain.Entities.Document
             {
@@ -196,7 +252,5 @@ namespace Implementation.UseCases.EntityFramework.Commands.Document
 
             return false;
         }
-
-       
     }
 }

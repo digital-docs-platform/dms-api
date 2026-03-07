@@ -1,5 +1,4 @@
-﻿using API.DTO.Requests.Document;
-using API.DTO.Response;
+﻿using API.DTO.Response;
 using Application.UseCaseHandling;
 using Application.UseCases.Commands;
 using Application.UseCases.Commands.Requests.Document;
@@ -7,6 +6,7 @@ using Application.UseCases.Queries;
 using Application.UseCases.Queries.Search;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,22 +25,52 @@ namespace API.Controllers
             _commandHandler = commandHandler;
             _queryHandler = queryHandler;
         }
-        // POST api/<DocumentController>
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request, [FromServices] ICreateDocumentCommand command,CancellationToken ct)
-        {
 
-            await _commandHandler.HandleAsync(command , request, ct);
+
+
+
+        [HttpPost]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create(
+            [FromForm] Guid documentTypeId,
+            [FromForm] string? title,
+            [FromForm] string? fieldsInputJson,
+            [FromForm] List<IFormFile>? files,
+            [FromServices] ICreateDocumentCommand command,
+            CancellationToken ct)
+        {
+            var fieldsInput = string.IsNullOrEmpty(fieldsInputJson)
+                ? new List<CreateDocumentFieldInputRequest>()
+                : JsonSerializer.Deserialize<List<CreateDocumentFieldInputRequest>>(fieldsInputJson) ?? new();
+
+            var request = new CreateDocumentRequest
+            {
+                DocumentTypeId = documentTypeId,
+                Title = title,
+                FieldsInput = fieldsInput,
+                Files = (files ?? new()).Select((f, i) => new DocumentFileInput
+                {
+                    Content = f.OpenReadStream(),
+                    FileName = f.FileName,
+                    ContentType = f.ContentType,
+                    SizeInBytes = f.Length,
+                    Order = i
+                }).ToList()
+            };
+
+            await _commandHandler.HandleAsync(command, request, ct);
 
             return StatusCode(201, new SuccessResponse
             {
                 Message = "Successfully added new Document!",
-                Data = new
-                {
-                    DocumentId = request.Id
-                }
+                Data = new { DocumentId = request.Id }
             });
         }
+
+
+
+
+
 
         [HttpGet("{documentId:guid}")]
         public async Task<IActionResult> GetDocumentById(

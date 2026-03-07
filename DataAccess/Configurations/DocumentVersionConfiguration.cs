@@ -24,22 +24,6 @@ namespace DataAccess.Configurations
             builder.Property(x => x.VersionNumber)
                    .IsRequired();
 
-            builder.Property(x => x.FileName)
-                   .IsRequired()
-                   .HasMaxLength(255);
-
-            builder.Property(x => x.ContentType)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
-            builder.Property(x => x.FileSizeBytes)
-                   .IsRequired();
-
-            builder.Property(x => x.StorageKey)
-                   .IsRequired()
-                   .HasMaxLength(512);
-
-         
             builder.HasIndex(x => new { x.DocumentId, x.VersionNumber })
                    .IsUnique();
 
@@ -55,10 +39,14 @@ namespace DataAccess.Configurations
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(v => v.CreatedByUser)
-                 .WithMany() // ili .WithMany(u => u.CreatedDocumentVersions)
+                 .WithMany()
                  .HasForeignKey(v => v.CreatedBy)
                  .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasMany(v => v.Files)
+                   .WithOne(f => f.Version)
+                   .HasForeignKey(f => f.DocumentVersionId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

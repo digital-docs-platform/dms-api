@@ -16,6 +16,8 @@ namespace Application.UseCases.Commands.Requests.Document
 
         public IReadOnlyCollection<CreateDocumentFieldInputRequest> FieldsInput { get; set; }
             = new List<CreateDocumentFieldInputRequest>();
+
+        public List<DocumentFileInput> Files { get; set; } = new();
     }
     public sealed class CreateDocumentFieldInputRequest
     {
