@@ -21,7 +21,8 @@ namespace Application.UseCases.Queries.Response
         public DateTime? ModifiedAt { get; set; }
 
         public LatestDocumentVersionDto? LatestVersion { get; set; }
-    }
+        public List<DocumentFileResponse> Files { get; set; } = [];
+    } 
 
     public sealed class LatestDocumentVersionDto
     {
@@ -50,4 +51,5 @@ namespace Application.UseCases.Queries.Response
         public int? OptionId { get; set; }
         public string? OptionLabel { get; set; }
     }
+
 }

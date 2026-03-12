@@ -1,5 +1,6 @@
 ﻿using Application.Exceptions;
 using Application.PermissionHandling;
+using Application.Storage;
 using Application.UseCases;
 using Application.UseCases.Queries;
 using Application.UseCases.Queries.Response;
@@ -28,10 +29,11 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
 
         public string Description => "Get document information by unique identifier";
 
-        public EFGetDocumentByIdQuery(DatabaseContext context)
+        private readonly IFileStorageService _fileStorageService;
+        public EFGetDocumentByIdQuery(IFileStorageService fileStorageService, DatabaseContext context)
             : base(context)
         {
-            
+            _fileStorageService = fileStorageService;
         }
         public async Task<GetDocumentByIdResponse> ExecuteAsync(DocumentIdSearch search, CancellationToken ct)
         {
@@ -54,6 +56,7 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
                 .AsNoTracking()
                 .Where(v => v.DocumentId == document.Id)
                 .Include(d => d.CreatedByUser)
+                .Include(v => v.Files)
                 .OrderByDescending(v => v.CreatedAt)
                 .FirstOrDefaultAsync(ct);
 
@@ -93,6 +96,21 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
                    .OrderBy(x => x.FieldDefinitionId)
                    .ToList()
             };
+
+            foreach (var file in latest.Files.OrderBy(f => f.Order))
+            {
+                var url = await _fileStorageService.GetPresignedUrlAsync(file.StorageKey, expirySeconds: 3600, ct);
+                response.Files.Add(new DocumentFileResponse
+                {
+                    Id = file.Id,
+                    Name = file.Name,
+                    Extension = file.Extension.ToString(),
+                    ContentType = file.ContentType,
+                    SizeInBytes = file.SizeInBytes,
+                    Order = file.Order,
+                    PresignedUrl = url
+                });
+            }
 
 
             return response;
