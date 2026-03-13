@@ -167,7 +167,9 @@ namespace Implementation.UseCases.EntityFramework.Queries.Document
                 Value = value,
 
                 OptionId = fv.ValueOptionId,
-                OptionLabel = fv.ValueOption?.Label
+                OptionLabel = fv.ValueOption?.Label,
+
+                IsRequired = fd.IsRequired  
             };
         }
 

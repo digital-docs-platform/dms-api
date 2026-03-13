@@ -50,6 +50,7 @@ namespace Application.UseCases.Queries.Response
 
         public int? OptionId { get; set; }
         public string? OptionLabel { get; set; }
+        public bool IsRequired { get; set; }
     }
 
 }
