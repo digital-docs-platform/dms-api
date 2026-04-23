@@ -46,12 +46,12 @@ namespace Implementation.UseCases.EntityFramework.Commands.DocumentType
                         f.IsRequired,
                         f.IsSearchable,
                         f.IsSortable,
-                        Options = f.SelectOptions.Select(o => new
+                        Options = f.DataType != FieldDataType.Select ? null : f.SelectOptions?.Select(o => new
                         {
                             o.Label,
                             o.SortOrder
                         }).ToList()
-                    })
+                    }).ToList()
                 }
             };
         }
